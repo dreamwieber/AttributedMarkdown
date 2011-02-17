@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include "markdown_peg.h"
-#include "utility_functions.c"
+#import "utility_functions.m"
 
 /**********************************************************************
 
@@ -733,5 +733,5 @@ RawNoteBlock =  a:StartList
 
 %%
 
-#include "parsing_functions.c"
+#import "parsing_functions.m"
 
