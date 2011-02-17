@@ -1,0 +1,12 @@
+markdown.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+markdown.xcodeproj/project.xcworkspace/xcuserdata/david.xcuserdatad/UserInterfaceState.xcuserstate
+markdown.xcodeproj/project.xcworkspace/xcuserdata/david.xcuserdatad/WorkspaceSettings.xcsettings
+markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/markdown.xcscheme
+markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/peg-markdown.xcscheme
+markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/xcschememanagement.plist
+.DS_Store
+*.o
+markdown
+
+peg-0.1.4/leg
+peg-0.1.4/peg
