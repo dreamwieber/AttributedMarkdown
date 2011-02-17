@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6334F217130C8AE1000D1180 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F216130C8AE1000D1180 /* Foundation.framework */; };
+		6334F236130C8B99000D1180 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F235130C8B99000D1180 /* Cocoa.framework */; };
+		6334F27A130C8D46000D1180 /* markdown.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F277130C8CEE000D1180 /* markdown.m */; settings = {COMPILER_FLAGS = "$(pkg-config --cflags glib-2.0)"; }; };
+		6334F280130C9323000D1180 /* markdown_lib.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F273130C8CEE000D1180 /* markdown_lib.m */; };
+		6334F281130C9326000D1180 /* markdown_output.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F274130C8CEE000D1180 /* markdown_output.m */; };
+		6334F282130C932A000D1180 /* markdown_parser.leg in Sources */ = {isa = PBXBuildFile; fileRef = 6334F275130C8CEE000D1180 /* markdown_parser.leg */; };
+		6334F28B130C995D000D1180 /* libpeg-markdown.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F234130C8B99000D1180 /* libpeg-markdown.a */; };
+		6334F28D130C99A8000D1180 /* libintl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F28C130C99A8000D1180 /* libintl.dylib */; };
+		6334F28F130C99AF000D1180 /* libglib-2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F28E130C99AF000D1180 /* libglib-2.0.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		6334F27E130C8D6D000D1180 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.leg";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			name = "Generate Leg Parser";
+			outputFiles = (
+				"$(DERIVED_FILES_DIR)/$(INPUT_FILE_BASE).m",
+			);
+			script = "echo `/usr/local/bin/pkg-config --cflags glib-2.0`\n${SRCROOT}/peg-0.1.4/leg -o ${DERIVED_FILES_DIR}/${INPUT_FILE_BASE}.m ${INPUT_FILE_PATH}";
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		6334F27B130C8D4C000D1180 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6334F209130C8AE1000D1180 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6334F233130C8B99000D1180;
+			remoteInfo = "peg-markdown";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6334F210130C8AE1000D1180 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6334F212130C8AE1000D1180 /* markdown */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = markdown; sourceTree = BUILT_PRODUCTS_DIR; };
+		6334F216130C8AE1000D1180 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6334F234130C8B99000D1180 /* libpeg-markdown.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libpeg-markdown.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6334F235130C8B99000D1180 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		6334F238130C8B99000D1180 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		6334F239130C8B99000D1180 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		6334F23A130C8B99000D1180 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6334F23D130C8B99000D1180 /* peg-markdown-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "peg-markdown-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		6334F272130C8CEE000D1180 /* markdown_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markdown_lib.h; sourceTree = SOURCE_ROOT; };
+		6334F273130C8CEE000D1180 /* markdown_lib.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = markdown_lib.m; sourceTree = SOURCE_ROOT; };
+		6334F274130C8CEE000D1180 /* markdown_output.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = markdown_output.m; sourceTree = SOURCE_ROOT; };
+		6334F275130C8CEE000D1180 /* markdown_parser.leg */ = {isa = PBXFileReference; lastKnownFileType = text; path = markdown_parser.leg; sourceTree = SOURCE_ROOT; };
+		6334F276130C8CEE000D1180 /* markdown_peg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markdown_peg.h; sourceTree = SOURCE_ROOT; };
+		6334F277130C8CEE000D1180 /* markdown.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = markdown.m; sourceTree = SOURCE_ROOT; };
+		6334F278130C8CEE000D1180 /* parsing_functions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = parsing_functions.m; sourceTree = SOURCE_ROOT; };
+		6334F279130C8CEE000D1180 /* utility_functions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = utility_functions.m; sourceTree = SOURCE_ROOT; };
+		6334F283130C9644000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
+		6334F285130C964D000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
+		6334F287130C9867000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
+		6334F289130C9873000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
+		6334F28C130C99A8000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
+		6334F28E130C99AF000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6334F20F130C8AE1000D1180 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6334F28F130C99AF000D1180 /* libglib-2.0.dylib in Frameworks */,
+				6334F28D130C99A8000D1180 /* libintl.dylib in Frameworks */,
+				6334F28B130C995D000D1180 /* libpeg-markdown.a in Frameworks */,
+				6334F217130C8AE1000D1180 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6334F231130C8B99000D1180 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6334F236130C8B99000D1180 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6334F207130C8AE1000D1180 = {
+			isa = PBXGroup;
+			children = (
+				6334F28E130C99AF000D1180 /* libglib-2.0.dylib */,
+				6334F28C130C99A8000D1180 /* libintl.dylib */,
+				6334F234130C8B99000D1180 /* libpeg-markdown.a */,
+				6334F289130C9873000D1180 /* libintl.dylib */,
+				6334F287130C9867000D1180 /* libglib-2.0.dylib */,
+				6334F285130C964D000D1180 /* libintl.dylib */,
+				6334F283130C9644000D1180 /* libglib-2.0.dylib */,
+				6334F271130C8CC0000D1180 /* markdown */,
+				6334F23B130C8B99000D1180 /* peg-markdown */,
+				6334F215130C8AE1000D1180 /* Frameworks */,
+				6334F213130C8AE1000D1180 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6334F213130C8AE1000D1180 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6334F212130C8AE1000D1180 /* markdown */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6334F215130C8AE1000D1180 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6334F216130C8AE1000D1180 /* Foundation.framework */,
+				6334F235130C8B99000D1180 /* Cocoa.framework */,
+				6334F237130C8B99000D1180 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6334F237130C8B99000D1180 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6334F238130C8B99000D1180 /* AppKit.framework */,
+				6334F239130C8B99000D1180 /* CoreData.framework */,
+				6334F23A130C8B99000D1180 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		6334F23B130C8B99000D1180 /* peg-markdown */ = {
+			isa = PBXGroup;
+			children = (
+				6334F272130C8CEE000D1180 /* markdown_lib.h */,
+				6334F273130C8CEE000D1180 /* markdown_lib.m */,
+				6334F274130C8CEE000D1180 /* markdown_output.m */,
+				6334F275130C8CEE000D1180 /* markdown_parser.leg */,
+				6334F276130C8CEE000D1180 /* markdown_peg.h */,
+				6334F278130C8CEE000D1180 /* parsing_functions.m */,
+				6334F279130C8CEE000D1180 /* utility_functions.m */,
+				6334F23D130C8B99000D1180 /* peg-markdown-Prefix.pch */,
+			);
+			path = "peg-markdown";
+			sourceTree = "<group>";
+		};
+		6334F271130C8CC0000D1180 /* markdown */ = {
+			isa = PBXGroup;
+			children = (
+				6334F277130C8CEE000D1180 /* markdown.m */,
+			);
+			name = markdown;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6334F232130C8B99000D1180 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6334F211130C8AE1000D1180 /* markdown */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6334F220130C8AE1000D1180 /* Build configuration list for PBXNativeTarget "markdown" */;
+			buildPhases = (
+				6334F20E130C8AE1000D1180 /* Sources */,
+				6334F20F130C8AE1000D1180 /* Frameworks */,
+				6334F210130C8AE1000D1180 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6334F27C130C8D4C000D1180 /* PBXTargetDependency */,
+			);
+			name = markdown;
+			productName = markdown;
+			productReference = 6334F212130C8AE1000D1180 /* markdown */;
+			productType = "com.apple.product-type.tool";
+		};
+		6334F233130C8B99000D1180 /* peg-markdown */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6334F23E130C8B99000D1180 /* Build configuration list for PBXNativeTarget "peg-markdown" */;
+			buildPhases = (
+				6334F230130C8B99000D1180 /* Sources */,
+				6334F231130C8B99000D1180 /* Frameworks */,
+				6334F232130C8B99000D1180 /* Headers */,
+			);
+			buildRules = (
+				6334F27E130C8D6D000D1180 /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = "peg-markdown";
+			productName = "peg-markdown";
+			productReference = 6334F234130C8B99000D1180 /* libpeg-markdown.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6334F209130C8AE1000D1180 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = humblehacker.com;
+			};
+			buildConfigurationList = 6334F20C130C8AE1000D1180 /* Build configuration list for PBXProject "markdown" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 6334F207130C8AE1000D1180;
+			productRefGroup = 6334F213130C8AE1000D1180 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6334F211130C8AE1000D1180 /* markdown */,
+				6334F233130C8B99000D1180 /* peg-markdown */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6334F20E130C8AE1000D1180 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6334F27A130C8D46000D1180 /* markdown.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6334F230130C8B99000D1180 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6334F282130C932A000D1180 /* markdown_parser.leg in Sources */,
+				6334F280130C9323000D1180 /* markdown_lib.m in Sources */,
+				6334F281130C9326000D1180 /* markdown_output.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6334F27C130C8D4C000D1180 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6334F233130C8B99000D1180 /* peg-markdown */;
+			targetProxy = 6334F27B130C8D4C000D1180 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6334F21E130C8AE1000D1180 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/include/glib-2.0",
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)";
+			};
+			name = Debug;
+		};
+		6334F21F130C8AE1000D1180 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/include/glib-2.0",
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)";
+			};
+			name = Release;
+		};
+		6334F221130C8AE1000D1180 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "markdown-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		6334F222130C8AE1000D1180 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "markdown-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		6334F23F130C8B99000D1180 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "peg-markdown-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		6334F240130C8B99000D1180 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "peg-markdown-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6334F20C130C8AE1000D1180 /* Build configuration list for PBXProject "markdown" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6334F21E130C8AE1000D1180 /* Debug */,
+				6334F21F130C8AE1000D1180 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6334F220130C8AE1000D1180 /* Build configuration list for PBXNativeTarget "markdown" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6334F221130C8AE1000D1180 /* Debug */,
+				6334F222130C8AE1000D1180 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6334F23E130C8B99000D1180 /* Build configuration list for PBXNativeTarget "peg-markdown" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6334F23F130C8B99000D1180 /* Debug */,
+				6334F240130C8B99000D1180 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6334F209130C8AE1000D1180 /* Project object */;
+}
