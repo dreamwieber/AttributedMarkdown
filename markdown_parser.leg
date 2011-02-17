@@ -1,7 +1,8 @@
 %{
 /**********************************************************************
 
-  markdown_parser.leg - markdown parser in C using a PEG grammar.
+  markdown_parser.leg - markdown parser in Cocoa using a PEG grammar.
+  (c) 2011 David Whetstone (david at humblehacker dot com).
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
 
   This program is free software; you can redistribute it and/or modify
@@ -17,7 +18,7 @@
 
 #include <stdbool.h>
 #include <assert.h>
-#include "markdown_peg.h"
+#import "markdown_peg.h"
 #import "utility_functions.m"
 
 /**********************************************************************
@@ -29,7 +30,7 @@
 %}
 
 Doc =       a:StartList ( Block { a = cons($$, a); } )*
-            { parse_result = reverse(a); }
+            { md.parse_result = reverse(a); }
 
 Block =     BlankLine*
             ( BlockQuote
@@ -122,8 +123,7 @@ ListLoose = a:StartList
             ( b:ListItem BlankLine*
               {   element *li;
                   li = b->children;
-                  li->contents.str = realloc(li->contents.str, strlen(li->contents.str) + 3);
-                  strcat(li->contents.str, "\n\n");  /* In loose list, \n\n added to end of each element */
+                  [li->contents.str appendString:@"\n\n"]; /* In loose list, \n\n added to end of each element */
                   a = cons(b, a);
               } )+
             { $$ = mk_list(LIST, a); }
@@ -538,12 +538,12 @@ TitleDouble = '"' < ( !( '"' Sp ( ')' | Newline ) ) . )* > '"'
 AutoLink = AutoLinkUrl | AutoLinkEmail
 
 AutoLinkUrl =   '<' < [A-Za-z]+ "://" ( !Newline !'>' . )+ > '>'
-                {   $$ = mk_link(mk_str(yytext), yytext, ""); }
+                {   NSString *url = [NSString stringWithFormat:@"%s", yytext];
+                    $$ = mk_link(mk_str(yytext), url, @""); }
 
 AutoLinkEmail = '<' < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > '>'
-                {   char *mailto = malloc(strlen(yytext) + 8);
-                    sprintf(mailto, "mailto:%s", yytext);
-                    $$ = mk_link(mk_str(yytext), mailto, "");
+                {   NSString *mailto = [NSString stringWithFormat:@"mailto:%s", yytext];
+                    $$ = mk_link(mk_str(yytext), mailto, @"");
                     free(mailto);
                 }
 
@@ -577,7 +577,7 @@ RefTitleParens = '(' < ( !(')' Sp Newline | Newline) . )* > ')'
 
 References = a:StartList
              ( b:Reference { a = cons(b, a); } | SkipBlock )*
-             { references = reverse(a); }
+             { md.references = reverse(a); }
 
 Ticks1 = "`" !'`'
 Ticks2 = "``" !'`'
@@ -690,13 +690,9 @@ NoteReference = &{ extension(EXT_NOTES) }
                         $$ = mk_element(NOTE);
                         assert(match->children != NULL);
                         $$->children = match->children;
-                        $$->contents.str = 0;
                     } else {
-                        char *s;
-                        s = malloc(strlen(ref->contents.str) + 4);
-                        sprintf(s, "[^%s]", ref->contents.str);
-                        $$ = mk_str(s);
-                        free(s);
+                        NSString *s = [NSString stringWithFormat:@"[^%@]", [ref->contents.str substringFromIndex:4]];
+                        $$ = mk_str(s.defaultCString);
                     }
                 }
 
@@ -709,7 +705,7 @@ Note =          &{ extension(EXT_NOTES) }
                 ( RawNoteBlock { a = cons($$, a); } )
                 ( &Indent RawNoteBlock { a = cons($$, a); } )*
                 {   $$ = mk_list(NOTE, a);
-                    $$->contents.str = strdup(ref->contents.str);
+                    $$->contents.str = [ref->contents.str mutableCopy];
                 }
 
 InlineNote =    &{ extension(EXT_NOTES) }
@@ -717,12 +713,11 @@ InlineNote =    &{ extension(EXT_NOTES) }
                 a:StartList
                 ( !']' Inline { a = cons($$, a); } )+
                 ']'
-                { $$ = mk_list(NOTE, a);
-                  $$->contents.str = 0; }
+                { $$ = mk_list(NOTE, a); }
 
 Notes =         a:StartList
                 ( b:Note { a = cons(b, a); } | SkipBlock )*
-                { notes = reverse(a); }
+                { md.notes = reverse(a); }
 
 RawNoteBlock =  a:StartList
                     ( !BlankLine OptionallyIndentedLine { a = cons($$, a); } )+
@@ -735,3 +730,5 @@ RawNoteBlock =  a:StartList
 
 #import "parsing_functions.m"
 
+
+/* vim:set ts=4 sw=4: */

@@ -1,7 +1,8 @@
-markdown in c, implemented using PEG grammar
+markdown in Cocoa, implemented using PEG grammar
+Copyright (c) 2011 David Whetstone
 Copyright (c) 2008 John MacFarlane
 
-peg-markdown is released under both the GPL and MIT licenses.
+peg-markdown for Cocoa is released under both the GPL and MIT licenses.
 You may pick the license that best fits your needs.
 
 The GPL

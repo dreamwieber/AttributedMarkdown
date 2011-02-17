@@ -1,12 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <glib.h>
+#import <Foundation/Foundation.h>
 
 enum markdown_extensions {
-    EXT_SMART            = 0x01,
-    EXT_NOTES            = 0x02,
-    EXT_FILTER_HTML      = 0x04,
-    EXT_FILTER_STYLES    = 0x08
+	EXT_NONE             = 0x00,
+	EXT_SMART            = 0x01,
+	EXT_NOTES            = 0x02,
+	EXT_FILTER_HTML      = 0x04,
+	EXT_FILTER_STYLES    = 0x08,
+	EXT_ALL              = 0xFF
 };
 
 enum markdown_formats {
@@ -15,7 +17,15 @@ enum markdown_formats {
     GROFF_MM_FORMAT
 };
 
-GString * markdown_to_g_string(char *text, int extensions, int output_format);
-char * markdown_to_string(char *text, int extensions, int output_format);
+NSMutableString * markdown_to_nsstring(NSString *text, int extensions, int output_format);
+const char * markdown_to_string(NSString *text, int extensions, int output_format);
+
+@interface NSMutableString (Sugar)
+- (void)appendCharacter:(unichar)ch;
+@end
+
+@interface NSString (Sugar)
+- (const char *)defaultCString;
+@end
 
 /* vim: set ts=4 sw=4 : */

@@ -23,7 +23,7 @@ void free_element_list(element * elt) {
 /* free_element_contents - free element contents depending on type */
 static void free_element_contents(element elt) {
     switch (elt.key) {
-      case STR:
+      case STRING:
       case SPACE:
       case RAW:
       case HTMLBLOCK:
@@ -31,16 +31,16 @@ static void free_element_contents(element elt) {
       case VERBATIM:
       case CODE:
       case NOTE:
-        free(elt.contents.str);
-        elt.contents.str = NULL;
+        [elt.contents.str release];
+        elt.contents.str = nil;
         break;
       case LINK:
       case IMAGE:
       case REFERENCE:
-        free(elt.contents.link->url);
-        elt.contents.link->url = NULL;
-        free(elt.contents.link->title);
-        elt.contents.link->title = NULL;
+        [elt.contents.link->url release];
+        elt.contents.link->url = nil;
+        [elt.contents.link->title release];
+        elt.contents.link->title = nil;
         free_element_list(elt.contents.link->label);
         free(elt.contents.link);
         elt.contents.link = NULL;
@@ -56,49 +56,53 @@ void free_element(element *elt) {
     free(elt);
 }
 
-element * parse_references(char *string, int extensions) {
+element * parse_references(NSString *string, int extensions) {
+    md.syntax_extensions = extensions;
 
-    char *oldcharbuf;
-    syntax_extensions = extensions;
-
-    oldcharbuf = charbuf;
-    charbuf = string;
+    struct Input saved = md.input;
+    md.input.charbuf  = string;
+    md.input.position = 0;
+  
     yyparsefrom(yy_References);    /* first pass, just to collect references */
-    charbuf = oldcharbuf;
 
-    return references;
+    md.input = saved;
+
+    return md.references;
 }
 
-element * parse_notes(char *string, int extensions, element *reference_list) {
-
-    char *oldcharbuf;
-    notes = NULL;
-    syntax_extensions = extensions;
+element * parse_notes(NSString *string, int extensions, element *reference_list) {
+    md.notes = NULL;
+    md.syntax_extensions = extensions;
 
     if (extension(EXT_NOTES)) {
-        references = reference_list;
-        oldcharbuf = charbuf;
-        charbuf = string;
+        md.references = reference_list;
+
+        struct Input saved = md.input;
+        md.input.charbuf  = string;
+        md.input.position = 0;
+
         yyparsefrom(yy_Notes);     /* second pass for notes */
-        charbuf = oldcharbuf;
+
+        md.input = saved;
     }
 
-    return notes;
+    return md.notes;
 }
 
-element * parse_markdown(char *string, int extensions, element *reference_list, element *note_list) {
+element * parse_markdown(NSString *string, int extensions, element *reference_list, element *note_list) {
+    md.syntax_extensions = extensions;
+    md.references = reference_list;
+    md.notes = note_list;
 
-    char *oldcharbuf;
-    syntax_extensions = extensions;
-    references = reference_list;
-    notes = note_list;
-
-    oldcharbuf = charbuf;
-    charbuf = string;
-
+    struct Input saved = md.input;
+    md.input.charbuf  = string;
+    md.input.position = 0;
+  
     yyparsefrom(yy_Doc);
 
-    charbuf = oldcharbuf;          /* restore charbuf to original value */
-    return parse_result;
+    md.input = saved;
 
+    return md.parse_result;
 }
+
+/* vim:set ts=4 sw=4: */

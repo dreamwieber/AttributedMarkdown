@@ -20,20 +20,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <glib.h>
-#include "markdown_peg.h"
+#include <Foundation/Foundation.h>
+#import "markdown_peg.h"
 
 static int extensions;
 
-static void print_html_string(GString *out, char *str, bool obfuscate);
-static void print_html_element_list(GString *out, element *list, bool obfuscate);
-static void print_html_element(GString *out, element *elt, bool obfuscate);
-static void print_latex_string(GString *out, char *str);
-static void print_latex_element_list(GString *out, element *list);
-static void print_latex_element(GString *out, element *elt);
-static void print_groff_string(GString *out, char *str);
-static void print_groff_mm_element_list(GString *out, element *list);
-static void print_groff_mm_element(GString *out, element *elt, int count);
+static void print_html_string(NSMutableString *out, NSString *str, bool obfuscate);
+static void print_html_element_list(NSMutableString *out, element *list, bool obfuscate);
+static void print_html_element(NSMutableString *out, element *elt, bool obfuscate);
+static void print_latex_string(NSMutableString *out, NSString *str);
+static void print_latex_element_list(NSMutableString *out, element *list);
+static void print_latex_element(NSMutableString *out, element *elt);
+static void print_groff_string(NSMutableString *out, NSString *str);
+static void print_groff_mm_element_list(NSMutableString *out, element *list);
+static void print_groff_mm_element(NSMutableString *out, element *elt, int count);
 
 /**********************************************************************
 
@@ -45,13 +45,13 @@ static int padded = 2;      /* Number of newlines after last output.
                                Starts at 2 so no newlines are needed at start.
                                */
 
-static GSList *endnotes = NULL; /* List of endnotes to print after main content. */
+static NSMutableArray *endnotes = nil; /* List of endnotes to print after main content. */
 static int notenumber = 0;  /* Number of footnote. */
 
 /* pad - add newlines if needed */
-static void pad(GString *out, int num) {
+static void pad(NSMutableString *out, int num) {
     while (num-- > padded)
-        g_string_append_printf(out, "\n");;
+        [out appendString:@"\n"];
     padded = num;
 }
 
@@ -63,37 +63,39 @@ static void pad(GString *out, int num) {
 
 /* print_html_string - print string, escaping for HTML  
  * If obfuscate selected, convert characters to hex or decimal entities at random */
-static void print_html_string(GString *out, char *str, bool obfuscate) {
-    while (*str != '\0') {
-        switch (*str) {
+static void print_html_string(NSMutableString *out, NSString *str, bool obfuscate) {
+  NSUInteger i;
+  unichar ch;
+  for (i = 0; i < str.length; ++i) {
+    ch = [str characterAtIndex:i];
+        switch (ch) {
         case '&':
-            g_string_append_printf(out, "&amp;");
+            [out appendString:@"&amp;"];
             break;
         case '<':
-            g_string_append_printf(out, "&lt;");
+            [out appendString:@"&lt;"];
             break;
         case '>':
-            g_string_append_printf(out, "&gt;");
+            [out appendString:@"&gt;"];
             break;
         case '"':
-            g_string_append_printf(out, "&quot;");
+            [out appendString:@"&quot;"];
             break;
         default:
             if (obfuscate) {
                 if (rand() % 2 == 0)
-                    g_string_append_printf(out, "&#%d;", (int) *str);
+                    [out appendFormat:@"&#%d;", (int) ch];
                 else
-                    g_string_append_printf(out, "&#x%x;", (unsigned int) *str);
+                    [out appendFormat:@"&#x%x;", (unsigned int) ch];
             }
             else
-                g_string_append_c(out, *str);
+                [out appendCharacter:ch];
         }
-    str++;
     }
 }
 
 /* print_html_element_list - print a list of elements as HTML */
-static void print_html_element_list(GString *out, element *list, bool obfuscate) {
+static void print_html_element_list(NSMutableString *out, element *list, bool obfuscate) {
     while (list != NULL) {
         print_html_element(out, list, obfuscate);
         list = list->next;
@@ -102,89 +104,91 @@ static void print_html_element_list(GString *out, element *list, bool obfuscate)
 
 /* add_endnote - add an endnote to global endnotes list. */
 static void add_endnote(element *elt) {
-    endnotes = g_slist_prepend(endnotes, elt);
+    if (endnotes == nil)
+        endnotes = [[NSMutableArray alloc] init];
+   [endnotes insertObject:[NSValue valueWithPointer:(const void*)elt] atIndex:0];
 }
 
 /* print_html_element - print an element as HTML */
-static void print_html_element(GString *out, element *elt, bool obfuscate) {
+static void print_html_element(NSMutableString *out, element *elt, bool obfuscate) {
     int lev;
     switch (elt->key) {
     case SPACE:
-        g_string_append_printf(out, "%s", elt->contents.str);
+        [out appendFormat:@"%@", elt->contents.str];
         break;
     case LINEBREAK:
-        g_string_append_printf(out, "<br/>\n");
+        [out appendString:@"<br/>\n"];
         break;
-    case STR:
+    case STRING:
         print_html_string(out, elt->contents.str, obfuscate);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "&hellip;");
+        [out appendString:@"&hellip;"];
         break;
     case EMDASH:
-        g_string_append_printf(out, "&mdash;");
+        [out appendString:@"&mdash;"];
         break;
     case ENDASH:
-        g_string_append_printf(out, "&ndash;");
+        [out appendString:@"&ndash;"];
         break;
     case APOSTROPHE:
-        g_string_append_printf(out, "&rsquo;");
+        [out appendString:@"&rsquo;"];
         break;
     case SINGLEQUOTED:
-        g_string_append_printf(out, "&lsquo;");
+        [out appendString:@"&lsquo;"];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "&rsquo;");
+        [out appendString:@"&rsquo;"];
         break;
     case DOUBLEQUOTED:
-        g_string_append_printf(out, "&ldquo;");
+        [out appendString:@"&ldquo;"];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "&rdquo;");
+        [out appendString:@"&rdquo;"];
         break;
     case CODE:
-        g_string_append_printf(out, "<code>");
+        [out appendString:@"<code>"];
         print_html_string(out, elt->contents.str, obfuscate);
-        g_string_append_printf(out, "</code>");
+        [out appendString:@"</code>"];
         break;
     case HTML:
-        g_string_append_printf(out, "%s", elt->contents.str);
+        [out appendFormat:@"%@", elt->contents.str];
         break;
     case LINK:
-        if (strstr(elt->contents.link->url, "mailto:") == elt->contents.link->url)
+          if ([elt->contents.link->url rangeOfString:@"mailto:"].location == 0)
             obfuscate = true;  /* obfuscate mailto: links */
-        g_string_append_printf(out, "<a href=\"");
+        [out appendString:@"<a href=\""];
         print_html_string(out, elt->contents.link->url, obfuscate);
-        g_string_append_printf(out, "\"");
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, " title=\"");
+        [out appendString:@"\""];
+        if (elt->contents.link->title.length > 0) {
+            [out appendString:@" title=\""];
             print_html_string(out, elt->contents.link->title, obfuscate);
-            g_string_append_printf(out, "\"");
+            [out appendString:@"\""];
         }
-        g_string_append_printf(out, ">");
+        [out appendString:@">"];
         print_html_element_list(out, elt->contents.link->label, obfuscate);
-        g_string_append_printf(out, "</a>");
+        [out appendString:@"</a>"];
         break;
     case IMAGE:
-        g_string_append_printf(out, "<img src=\"");
+        [out appendString:@"<img src=\""];
         print_html_string(out, elt->contents.link->url, obfuscate);
-        g_string_append_printf(out, "\" alt=\"");
+        [out appendString:@"\" alt=\""];
         print_html_element_list(out, elt->contents.link->label, obfuscate);
-        g_string_append_printf(out, "\"");
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, " title=\"");
+        [out appendString:@"\""];
+        if (elt->contents.link->title.length > 0) {
+            [out appendString:@" title=\""];
             print_html_string(out, elt->contents.link->title, obfuscate);
-            g_string_append_printf(out, "\"");
+            [out appendString:@"\""];
         }
-        g_string_append_printf(out, " />");
+        [out appendString:@" />"];
         break;
     case EMPH:
-        g_string_append_printf(out, "<em>");
+        [out appendString:@"<em>"];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</em>");
+        [out appendString:@"</em>"];
         break;
     case STRONG:
-        g_string_append_printf(out, "<strong>");
+        [out appendString:@"<strong>"];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</strong>");
+        [out appendString:@"</strong>"];
         break;
     case LIST:
         print_html_element_list(out, elt->children, obfuscate);
@@ -196,9 +200,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
         pad(out, 2);
-        g_string_append_printf(out, "<h%1d>", lev);
+        [out appendFormat:@"<h%1d>", lev];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</h%1d>", lev);
+        [out appendFormat:@"</h%1d>", lev];
         padded = 0;
         break;
     case PLAIN:
@@ -208,61 +212,61 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case PARA:
         pad(out, 2);
-        g_string_append_printf(out, "<p>");
+        [out appendString:@"<p>"];
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</p>");
+        [out appendString:@"</p>"];
         padded = 0;
         break;
     case HRULE:
         pad(out, 2);
-        g_string_append_printf(out, "<hr />");
+        [out appendString:@"<hr />"];
         padded = 0;
         break;
     case HTMLBLOCK:
         pad(out, 2);
-        g_string_append_printf(out, "%s", elt->contents.str);
+        [out appendFormat:@"%@", elt->contents.str];
         padded = 0;
         break;
     case VERBATIM:
         pad(out, 2);
-        g_string_append_printf(out, "%s", "<pre><code>");
+        [out appendFormat:@"%s", "<pre><code>"];
         print_html_string(out, elt->contents.str, obfuscate);
-        g_string_append_printf(out, "%s", "</code></pre>");
+        [out appendFormat:@"%s", "</code></pre>"];
         padded = 0;
         break;
     case BULLETLIST:
         pad(out, 2);
-        g_string_append_printf(out, "%s", "<ul>");
+        [out appendFormat:@"%s", "<ul>"];
         padded = 0;
         print_html_element_list(out, elt->children, obfuscate);
         pad(out, 1);
-        g_string_append_printf(out, "%s", "</ul>");
+        [out appendFormat:@"%s", "</ul>"];
         padded = 0;
         break;
     case ORDEREDLIST:
         pad(out, 2);
-        g_string_append_printf(out, "%s", "<ol>");
+        [out appendFormat:@"%s", "<ol>"];
         padded = 0;
         print_html_element_list(out, elt->children, obfuscate);
         pad(out, 1);
-        g_string_append_printf(out, "</ol>");
+        [out appendString:@"</ol>"];
         padded = 0;
         break;
     case LISTITEM:
         pad(out, 1);
-        g_string_append_printf(out, "<li>");
+        [out appendString:@"<li>"];
         padded = 2;
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</li>");
+        [out appendString:@"</li>"];
         padded = 0;
         break;
     case BLOCKQUOTE:
         pad(out, 2);
-        g_string_append_printf(out, "<blockquote>\n");
+        [out appendString:@"<blockquote>\n"];
         padded = 2;
         print_html_element_list(out, elt->children, obfuscate);
         pad(out, 1);
-        g_string_append_printf(out, "</blockquote>");
+        [out appendString:@"</blockquote>"];
         padded = 0;
         break;
     case REFERENCE:
@@ -274,8 +278,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         if (elt->contents.str == 0) {
             add_endnote(elt);
             ++notenumber;
-            g_string_append_printf(out, "<a class=\"noteref\" id=\"fnref%d\" href=\"#fn%d\" title=\"Jump to note %d\">[%d]</a>",
-                notenumber, notenumber, notenumber, notenumber);
+                [out appendFormat:@"<a class=\"noteref\" id=\"fnref%d\" href=\"#fn%d\" title=\"Jump to note %d\">[%d]</a>",
+                notenumber, notenumber, notenumber, notenumber];
         }
         break;
     default: 
@@ -284,29 +288,26 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     }
 }
 
-static void print_html_endnotes(GString *out) {
+static void print_html_endnotes(NSMutableString *out) {
     int counter = 0;
-    GSList *note;
     element *note_elt;
-    if (endnotes == NULL) 
+    if (endnotes == nil) 
         return;
-    note = g_slist_reverse(endnotes);
-    g_string_append_printf(out, "<hr/>\n<ol id=\"notes\">");
-    while (note != NULL) {
-        note_elt = note->data;
+    [out appendString:@"<hr/>\n<ol id=\"notes\">"];
+    for (NSValue *note in [endnotes reverseObjectEnumerator]) {
+        note_elt = (element*)[note pointerValue];
         counter++;
         pad(out, 1);
-        g_string_append_printf(out, "<li id=\"fn%d\">\n", counter);
+        [out appendFormat:@"<li id=\"fn%d\">\n", counter];
         padded = 2;
         print_html_element_list(out, note_elt->children, false);
-        g_string_append_printf(out, " <a href=\"#fnref%d\" title=\"Jump back to reference\">[back]</a>", counter);
+        [out appendFormat:@" <a href=\"#fnref%d\" title=\"Jump back to reference\">[back]</a>", counter];
         pad(out, 1);
-        g_string_append_printf(out, "</li>");
-        note = note->next;
+        [out appendString:@"</li>"];
     }
     pad(out, 1);
-    g_string_append_printf(out, "</ol>");
-    g_slist_free(endnotes);
+    [out appendString:@"</ol>"];
+    [endnotes release];
 }
 
 /**********************************************************************
@@ -316,40 +317,41 @@ static void print_html_endnotes(GString *out) {
  ***********************************************************************/
 
 /* print_latex_string - print string, escaping for LaTeX */
-static void print_latex_string(GString *out, char *str) {
-    while (*str != '\0') {
-        switch (*str) {
+static void print_latex_string(NSMutableString *out, NSString *str) {
+    unichar ch;
+    for (NSUInteger i = 0; i < str.length; ++i) {
+        ch = [str characterAtIndex:i];
+        switch (ch) {
           case '{': case '}': case '$': case '%':
           case '&': case '_': case '#':
-            g_string_append_printf(out, "\\%c", *str);
+            [out appendFormat:@"\\%c", ch];
             break;
         case '^':
-            g_string_append_printf(out, "\\^{}");
+            [out appendString:@"\\^{}"];
             break;
         case '\\':
-            g_string_append_printf(out, "\\textbackslash{}");
+            [out appendString:@"\\textbackslash{}"];
             break;
         case '~':
-            g_string_append_printf(out, "\\ensuremath{\\sim}");
+            [out appendString:@"\\ensuremath{\\sim}"];
             break;
         case '|':
-            g_string_append_printf(out, "\\textbar{}");
+            [out appendString:@"\\textbar{}"];
             break;
         case '<':
-            g_string_append_printf(out, "\\textless{}");
+            [out appendString:@"\\textless{}"];
             break;
         case '>':
-            g_string_append_printf(out, "\\textgreater{}");
+            [out appendString:@"\\textgreater{}"];
             break;
         default:
-            g_string_append_c(out, *str);
+                [out appendCharacter:ch];
         }
-    str++;
     }
 }
 
 /* print_latex_element_list - print a list of elements as LaTeX */
-static void print_latex_element_list(GString *out, element *list) {
+static void print_latex_element_list(NSMutableString *out, element *list) {
     while (list != NULL) {
         print_latex_element(out, list);
         list = list->next;
@@ -357,66 +359,65 @@ static void print_latex_element_list(GString *out, element *list) {
 }
 
 /* print_latex_element - print an element as LaTeX */
-static void print_latex_element(GString *out, element *elt) {
+static void print_latex_element(NSMutableString *out, element *elt) {
     int lev;
-    int i;
     switch (elt->key) {
     case SPACE:
-        g_string_append_printf(out, "%s", elt->contents.str);
+        [out appendFormat:@"%@", elt->contents.str];
         break;
     case LINEBREAK:
-        g_string_append_printf(out, "\\\\\n");
+        [out appendString:@"\\\\\n"];
         break;
-    case STR:
+    case STRING:
         print_latex_string(out, elt->contents.str);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "\\ldots{}");
+        [out appendString:@"\\ldots{}"];
         break;
     case EMDASH: 
-        g_string_append_printf(out, "---");
+        [out appendString:@"---"];
         break;
     case ENDASH: 
-        g_string_append_printf(out, "--");
+        [out appendString:@"--"];
         break;
     case APOSTROPHE:
-        g_string_append_printf(out, "'");
+        [out appendString:@"'"];
         break;
     case SINGLEQUOTED:
-        g_string_append_printf(out, "`");
+        [out appendString:@"`"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "'");
+        [out appendString:@"'"];
         break;
     case DOUBLEQUOTED:
-        g_string_append_printf(out, "``");
+        [out appendString:@"``"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "''");
+        [out appendString:@"''"];
         break;
     case CODE:
-        g_string_append_printf(out, "\\texttt{");
+        [out appendString:@"\\texttt{"];
         print_latex_string(out, elt->contents.str);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         break;
     case HTML:
         /* don't print HTML */
         break;
     case LINK:
-        g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
+        [out appendFormat:@"\\href{%s}{", elt->contents.link->url];
         print_latex_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\includegraphics{%s}", elt->contents.link->url);
+        [out appendFormat:@"\\includegraphics{%s}", elt->contents.link->url];
         break;
     case EMPH:
-        g_string_append_printf(out, "\\emph{");
+        [out appendString:@"\\emph{"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         break;
     case STRONG:
-        g_string_append_printf(out, "\\textbf{");
+        [out appendString:@"\\textbf{"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         break;
     case LIST:
         print_latex_element_list(out, elt->children);
@@ -428,19 +429,19 @@ static void print_latex_element(GString *out, element *elt) {
     case H1: case H2: case H3:
         pad(out, 2);
         lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
-        g_string_append_printf(out, "\\");
-        for (i = elt->key; i > H1; i--)
-            g_string_append_printf(out, "sub");
-        g_string_append_printf(out, "section{");
+        [out appendString:@"\\"];
+        while(lev--)
+            [out appendString:@"sub"];
+        [out appendString:@"section{"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         padded = 0;
         break;
     case H4: case H5: case H6:
         pad(out, 2);
-        g_string_append_printf(out, "\\noindent\\textbf{");
+        [out appendString:@"\\noindent\\textbf{"];
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        [out appendString:@"}"];
         padded = 0;
         break;
     case PLAIN:
@@ -455,7 +456,7 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case HRULE:
         pad(out, 2);
-        g_string_append_printf(out, "\\begin{center}\\rule{3in}{0.4pt}\\end{center}\n");
+        [out appendString:@"\\begin{center}\\rule{3in}{0.4pt}\\end{center}\n"];
         padded = 0;
         break;
     case HTMLBLOCK:
@@ -463,53 +464,53 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{verbatim}\n");
+        [out appendString:@"\\begin{verbatim}\n"];
         print_latex_string(out, elt->contents.str);
-        g_string_append_printf(out, "\n\\end{verbatim}");
+        [out appendString:@"\n\\end{verbatim}"];
         padded = 0;
         break;
     case BULLETLIST:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{itemize}");
+        [out appendString:@"\\begin{itemize}"];
         padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, "\\end{itemize}");
+        [out appendString:@"\\end{itemize}"];
         padded = 0;
         break;
     case ORDEREDLIST:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{enumerate}");
+        [out appendString:@"\\begin{enumerate}"];
         padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, "\\end{enumerate}");
+        [out appendString:@"\\end{enumerate}"];
         padded = 0;
         break;
     case LISTITEM:
         pad(out, 1);
-        g_string_append_printf(out, "\\item ");
+        [out appendString:@"\\item "];
         padded = 2;
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n");
+        [out appendString:@"\n"];
         break;
     case BLOCKQUOTE:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{quote}");
+        [out appendString:@"\\begin{quote}"];
         padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, "\\end{quote}");
+        [out appendString:@"\\end{quote}"];
         padded = 0;
         break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
         if (elt->contents.str == 0) {
-            g_string_append_printf(out, "\\footnote{");
+            [out appendString:@"\\footnote{"];
             padded = 2;
             print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "}");
+            [out appendString:@"}"];
             padded = 0; 
         }
         break;
@@ -531,21 +532,22 @@ static void print_latex_element(GString *out, element *elt) {
 static bool in_list_item = false; /* True if we're parsing contents of a list item. */
 
 /* print_groff_string - print string, escaping for groff */
-static void print_groff_string(GString *out, char *str) {
-    while (*str != '\0') {
-        switch (*str) {
+static void print_groff_string(NSMutableString *out, NSString *str) {
+    unichar ch;
+    for (NSUInteger i = 0; i < str.length; ++i) {
+        ch = [str characterAtIndex:i];
+        switch (ch) {
         case '\\':
-            g_string_append_printf(out, "\\e");
+            [out appendString:@"\\e"];
             break;
         default:
-            g_string_append_c(out, *str);
+                [out appendCharacter:ch];
         }
-    str++;
     }
 }
 
 /* print_groff_mm_element_list - print a list of elements as groff ms */
-static void print_groff_mm_element_list(GString *out, element *list) {
+static void print_groff_mm_element_list(NSMutableString *out, element *list) {
     int count = 1;
     while (list != NULL) {
         print_groff_mm_element(out, list, count);
@@ -555,48 +557,48 @@ static void print_groff_mm_element_list(GString *out, element *list) {
 }
 
 /* print_groff_mm_element - print an element as groff ms */
-static void print_groff_mm_element(GString *out, element *elt, int count) {
+static void print_groff_mm_element(NSMutableString *out, element *elt, int count) {
     int lev;
     switch (elt->key) {
     case SPACE:
-        g_string_append_printf(out, "%s", elt->contents.str);
+        [out appendFormat:@"%@", elt->contents.str];
         padded = 0;
         break;
     case LINEBREAK:
         pad(out, 1);
-        g_string_append_printf(out, ".br\n");
+        [out appendString:@".br\n"];
         padded = 0;
         break;
-    case STR:
+    case STRING:
         print_groff_string(out, elt->contents.str);
         padded = 0;
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "...");
+        [out appendString:@"..."];
         break;
     case EMDASH:
-        g_string_append_printf(out, "\\[em]");
+        [out appendString:@"\\[em]"];
         break;
     case ENDASH:
-        g_string_append_printf(out, "\\[en]");
+        [out appendString:@"\\[en]"];
         break;
     case APOSTROPHE:
-        g_string_append_printf(out, "'");
+        [out appendString:@"'"];
         break;
     case SINGLEQUOTED:
-        g_string_append_printf(out, "`");
+        [out appendString:@"`"];
         print_groff_mm_element_list(out, elt->children);
-        g_string_append_printf(out, "'");
+        [out appendString:@"'"];
         break;
     case DOUBLEQUOTED:
-        g_string_append_printf(out, "\\[lq]");
+        [out appendString:@"\\[lq]"];
         print_groff_mm_element_list(out, elt->children);
-        g_string_append_printf(out, "\\[rq]");
+        [out appendString:@"\\[rq]"];
         break;
     case CODE:
-        g_string_append_printf(out, "\\fC");
+        [out appendString:@"\\fC"];
         print_groff_string(out, elt->contents.str);
-        g_string_append_printf(out, "\\fR");
+        [out appendString:@"\\fR"];
         padded = 0;
         break;
     case HTML:
@@ -604,26 +606,26 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
         break;
     case LINK:
         print_groff_mm_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, " (%s)", elt->contents.link->url);
+        [out appendFormat:@" (%s)", elt->contents.link->url];
         padded = 0;
         break;
     case IMAGE:
-        g_string_append_printf(out, "[IMAGE: ");
+        [out appendString:@"[IMAGE: "];
         print_groff_mm_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, "]");
+        [out appendString:@"]"];
         padded = 0;
         /* not supported */
         break;
     case EMPH:
-        g_string_append_printf(out, "\\fI");
+        [out appendString:@"\\fI"];
         print_groff_mm_element_list(out, elt->children);
-        g_string_append_printf(out, "\\fR");
+        [out appendString:@"\\fR"];
         padded = 0;
         break;
     case STRONG:
-        g_string_append_printf(out, "\\fB");
+        [out appendString:@"\\fB"];
         print_groff_mm_element_list(out, elt->children);
-        g_string_append_printf(out, "\\fR");
+        [out appendString:@"\\fR"];
         padded = 0;
         break;
     case LIST:
@@ -637,9 +639,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + 1;
         pad(out, 1);
-        g_string_append_printf(out, ".H %d \"", lev);
+        [out appendFormat:@".H %d \"", lev];
         print_groff_mm_element_list(out, elt->children);
-        g_string_append_printf(out, "\"");
+        [out appendString:@"\""];
         padded = 0;
         break;
     case PLAIN:
@@ -650,13 +652,13 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
     case PARA:
         pad(out, 1);
         if (!in_list_item || count != 1)
-            g_string_append_printf(out, ".P\n");
+            [out appendString:@".P\n"];
         print_groff_mm_element_list(out, elt->children);
         padded = 0;
         break;
     case HRULE:
         pad(out, 1);
-        g_string_append_printf(out, "\\l'\\n(.lu*8u/10u'");
+        [out appendString:@"\\l'\\n(.lu*8u/10u'"];
         padded = 0;
         break;
     case HTMLBLOCK:
@@ -664,32 +666,32 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, ".VERBON 2\n");
+        [out appendString:@".VERBON 2\n"];
         print_groff_string(out, elt->contents.str);
-        g_string_append_printf(out, ".VERBOFF");
+        [out appendString:@".VERBOFF"];
         padded = 0;
         break;
     case BULLETLIST:
         pad(out, 1);
-        g_string_append_printf(out, ".BL");
+        [out appendString:@".BL"];
         padded = 0;
         print_groff_mm_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, ".LE 1");
+        [out appendString:@".LE 1"];
         padded = 0;
         break;
     case ORDEREDLIST:
         pad(out, 1);
-        g_string_append_printf(out, ".AL");
+        [out appendString:@".AL"];
         padded = 0;
         print_groff_mm_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, ".LE 1");
+        [out appendString:@".LE 1"];
         padded = 0;
         break;
     case LISTITEM:
         pad(out, 1);
-        g_string_append_printf(out, ".LI\n");
+        [out appendString:@".LI\n"];
         in_list_item = true;
         padded = 2;
         print_groff_mm_element_list(out, elt->children);
@@ -697,23 +699,23 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
         break;
     case BLOCKQUOTE:
         pad(out, 1);
-        g_string_append_printf(out, ".DS I\n");
+        [out appendString:@".DS I\n"];
         padded = 2;
         print_groff_mm_element_list(out, elt->children);
         pad(out, 1);
-        g_string_append_printf(out, ".DE");
+        [out appendString:@".DE"];
         padded = 0;
         break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
         if (elt->contents.str == 0) {
-            g_string_append_printf(out, "\\*F\n");
-            g_string_append_printf(out, ".FS\n");
+            [out appendString:@"\\*F\n"];
+            [out appendString:@".FS\n"];
             padded = 2;
             print_groff_mm_element_list(out, elt->children);
             pad(out, 1);
-            g_string_append_printf(out, ".FE\n");
+            [out appendString:@".FE\n"];
             padded = 1; 
         }
         break;
@@ -732,9 +734,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
 
  ***********************************************************************/
 
-void print_element_list(GString *out, element *elt, int format, int exts) {
+void print_element_list(NSMutableString *out, element *elt, int format, int exts) {
     /* Initialize globals */
-    endnotes = NULL;
+    endnotes = nil;
     notenumber = 0;
 
     extensions = exts;
@@ -742,7 +744,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     switch (format) {
     case HTML_FORMAT:
         print_html_element_list(out, elt, false);
-        if (endnotes != NULL) {
+        if (endnotes != nil) {
             pad(out, 2);
             print_html_endnotes(out);
         }
@@ -758,3 +760,5 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
         exit(EXIT_FAILURE);
     }
 }
+
+/* vim:set ts=4 sw=4: */

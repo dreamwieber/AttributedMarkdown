@@ -1,6 +1,8 @@
+
 /**********************************************************************
 
-  markdown.c - markdown in C using a PEG grammar.
+  markdown.m - markdown in Cocoa using a PEG grammar.
+  (c) 2011 David Whetstone (david at humblehacker dot com).
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
 
   This program is free software; you can redistribute it and/or modify
@@ -14,15 +16,16 @@
 
  ***********************************************************************/
 
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <glib.h>
-#include "markdown_peg.h"
-
-static int extensions;
+#import <Foundation/Foundation.h>
+#import "markdown_lib.h"
+#import "markdown_peg.h"
+#include <getopt.h>
 
 /**********************************************************************
 
@@ -33,149 +36,185 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "0.4.12"
-#define COPYRIGHT "Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
+#define VERSION "0.4.12Cocoa"
+#define COPYRIGHT "Copyright (c) 2011 David Whetstone.  Original code is \n" \
+                  "Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
                   "There is NO WARRANTY, to the extent permitted by law."
 
 /* print version and copyright information */
-void version(const char *progname)
+void version()
 {
-  printf("peg-markdown version %s\n"
+  printf("markdown version %s\n"
          "%s\n",
          VERSION,
          COPYRIGHT);
 }
 
-int main(int argc, char * argv[]) {
+typedef enum {
+    NO_HELP,
+    HELP_BASIC,
+    HELP_EXTENSIONS,
+    HELP_ALL
+} help_options;
 
-    int numargs;            /* number of filename arguments */
-    int i;
+void usage(help_options options) {
+    version();
 
-    GString *inputbuf;
-    char *out;              /* string containing processed output */
+    static const char usage[] =
+      "Usage:                                                               \n"
+      "  markdown [OPTION...] [FILE...]                                     \n";
 
-    FILE *input;
-    FILE *output;
-    char curchar;
-    char *progname = argv[0];
+    static const char help[] =
+      "Help Options:                                                        \n"
+      "  -h, --help              Show help options                          \n"
+      "  --help-all              Show all help options                      \n"
+      "  --help-extensions       show available syntax extensions           \n";
 
+    static const char application[] =
+      "Application Options:                                                 \n"
+      "  -v, --version           print version and exit                     \n"
+      "  -o, --output=FILE       send output to FILE (default is stdout)    \n"
+      "  -t, --to=FORMAT         convert to FORMAT (default is html)        \n"
+      "  -x, --extensions        use all syntax extensions                  \n"
+      "  --filter-html           filter out raw HTML (except styles)        \n"
+      "  --filter-styles         filter out HTML styles                     \n"
+      "                                                                     \n"
+      "Converts text in specified files (or stdin) from markdown to FORMAT. \n"
+      "Available FORMATs:  html, latex, groff-mm                            \n";
+
+    static const char extensions[] =
+      "Syntax extensions                                                    \n"
+      "  --smart                 use smart typography extension             \n"
+      "  --notes                 use notes extension                        \n";
+
+    printf("%s\n", usage);
+
+    if (options == HELP_BASIC || options == HELP_ALL)
+        printf("%s\n", help);
+
+    if (options == HELP_EXTENSIONS || options == HELP_ALL)
+        printf("%s\n", extensions);
+
+    if (options == HELP_BASIC || options == HELP_ALL)
+        printf("%s\n", application);
+
+    exit (1);
+}
+
+int main (int argc, char * argv[]) {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
+    FILE *output = NULL;
+    int extensions = 0;
     int output_format = HTML_FORMAT;
 
     /* Code for command-line option parsing. */
+    static int help_opt = NO_HELP;
+    static int ext_opt = EXT_NONE;
 
-    static gboolean opt_version = FALSE;
-    static gchar *opt_output = 0;
-    static gchar *opt_to = 0;
-    static gboolean opt_smart = FALSE;
-    static gboolean opt_notes = FALSE;
-    static gboolean opt_filter_html = FALSE;
-    static gboolean opt_filter_styles = FALSE;
-    static gboolean opt_allext = FALSE;
-
-    static GOptionEntry entries[] =
+    static struct option longopts[] =
     {
-      { "version", 'v', 0, G_OPTION_ARG_NONE, &opt_version, "print version and exit", NULL },
-      { "output", 'o', 0, G_OPTION_ARG_STRING, &opt_output, "send output to FILE (default is stdout)", "FILE" },
-      { "to", 't', 0, G_OPTION_ARG_STRING, &opt_to, "convert to FORMAT (default is html)", "FORMAT" },
-      { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
-      { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
-      { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
+      { "version",          no_argument,        NULL,       'v'                },
+      { "output",           required_argument,  NULL,       'o'                },
+      { "to",               required_argument,  NULL,       't'                },
+      { "help",             no_argument,        &help_opt,  HELP_BASIC         },
+      { "help-all",         no_argument,        &help_opt,  HELP_ALL           },
+      { "help-extensions",  no_argument,        &help_opt,  HELP_EXTENSIONS    },
+      { "extensions",       no_argument,        &ext_opt,   EXT_ALL            },
+      { "filter-html",      no_argument,        &ext_opt,   EXT_FILTER_HTML    },
+      { "filter-styles",    no_argument,        &ext_opt,   EXT_FILTER_STYLES  },
+      { "smart",            no_argument,        &ext_opt,   EXT_SMART          },
+      { "notes",            no_argument,        &ext_opt,   EXT_NOTES          },
       { NULL }
     };
 
-    /* Options to active syntax extensions.  These appear separately in --help. */
-    static GOptionEntry ext_entries[] =
-    {
-      { "smart", 0, 0, G_OPTION_ARG_NONE, &opt_smart, "use smart typography extension", NULL },
-      { "notes", 0, 0, G_OPTION_ARG_NONE, &opt_notes, "use notes extension", NULL },
-      { NULL }
+
+    int ch;
+    while ((ch = getopt_long(argc, argv, "hvo:t:x", longopts, NULL)) != -1) {
+        switch (ch) {
+            case 'v':
+                version();
+                return EXIT_SUCCESS;
+
+            case 'o':
+                if (optarg == NULL || strcmp(optarg, "-") == 0)
+                    output = stdout;
+                else if (!(output = fopen(optarg, "w"))) {
+                    perror(optarg);
+                    return 1;
+                }
+                break;
+
+            case 't':
+                if (optarg == NULL)
+                    output_format = HTML_FORMAT;
+                else if (strcmp(optarg, "html") == 0)
+                    output_format = HTML_FORMAT;
+                else if (strcmp(optarg, "latex") == 0)
+                    output_format = LATEX_FORMAT;
+                else if (strcmp(optarg, "groff-mm") == 0)
+                    output_format = GROFF_MM_FORMAT;
+                else {
+                    fprintf(stderr, "%s: Unknown output format '%s'\n", getprogname(), optarg);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+
+            case 'x':
+                extensions = EXT_ALL;
+                break;
+
+            case 0:
+                if (help_opt)
+                    usage(help_opt);
+
+                if (ext_opt)
+                    extensions |= ext_opt;
+
+                break;
+
+            default:
+                usage(HELP_BASIC);
+                break;
+        };
     };
 
-    GError *error = NULL;
-    GOptionContext *context;
-    GOptionGroup *ext_group;
+    argc -= optind;
+    argv += optind;
 
-    context = g_option_context_new ("[FILE...]");
-    g_option_context_add_main_entries (context, entries, NULL);
-    ext_group = g_option_group_new ("extensions", "Syntax extensions", "show available syntax extensions", NULL, NULL);
-    g_option_group_add_entries (ext_group, ext_entries);
-    g_option_context_add_group (context, ext_group);
-    g_option_context_set_description (context, "Converts text in specified files (or stdin) from markdown to FORMAT.\n"
-                                               "Available FORMATs:  html, latex, groff-mm");
-    if (!g_option_context_parse (context, &argc, &argv, &error)) {
-        g_print ("option parsing failed: %s\n", error->message);
-        exit (1);
-    }
-    g_option_context_free(context);
-
-    /* Process command-line options and arguments. */
-
-    if (opt_version) {
-        version(progname);
-        return EXIT_SUCCESS;
-    }
-
-    extensions = 0;
-    if (opt_allext)
-        extensions = 0xFFFFFF;  /* turn on all extensions */
-    if (opt_smart)
-        extensions = extensions | EXT_SMART;
-    if (opt_notes)
-        extensions = extensions | EXT_NOTES;
-    if (opt_filter_html)
-        extensions = extensions | EXT_FILTER_HTML;
-    if (opt_filter_styles)
-        extensions = extensions | EXT_FILTER_STYLES;
-
-    if (opt_to == NULL)
-        output_format = HTML_FORMAT;
-    else if (strcmp(opt_to, "html") == 0)
-        output_format = HTML_FORMAT;
-    else if (strcmp(opt_to, "latex") == 0)
-        output_format = LATEX_FORMAT;
-    else if (strcmp(opt_to, "groff-mm") == 0)
-        output_format = GROFF_MM_FORMAT;
-    else {
-        fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
-        exit(EXIT_FAILURE);
-    }
-
-    /* we allow "-" as a synonym for stdout here */
-    if (opt_output == NULL || strcmp(opt_output, "-") == 0)
+    if (!output)
         output = stdout;
-    else if (!(output = fopen(opt_output, "w"))) {
-        perror(opt_output);
-        return 1;
-    }
 
-    inputbuf = g_string_new("");   /* string for concatenated input */
+    NSMutableString *inputbuf = [[[NSMutableString alloc] init] autorelease];
 
     /* Read input from stdin or input files into inputbuf */
 
-    numargs = argc - 1;
-    if (numargs == 0) {        /* use stdin if no files specified */
+    FILE *input = NULL;
+    char curchar;
+    if (argc == 0) {        /* use stdin if no files specified */
         while ((curchar = fgetc(stdin)) != EOF)
-            g_string_append_c(inputbuf, curchar);
+            [inputbuf appendCharacter:curchar];
         fclose(stdin);
     }
-    else {                  /* open all the files on command line */
-       for (i = 0; i < numargs; i++) {
-            if ((input = fopen(argv[i+1], "r")) == NULL) {
-                perror(argv[i+1]);
+    else {                     /* open all the files on command line */
+        int numargs = argc;
+        while (numargs--) {
+            if ((input = fopen(argv[argc-numargs-1], "r")) == NULL) {
+                perror(argv[argc-numargs]);
                 exit(EXIT_FAILURE);
             }
             while ((curchar = fgetc(input)) != EOF)
-                g_string_append_c(inputbuf, curchar);
+                [inputbuf appendCharacter:curchar];
             fclose(input);
-       }
+        }
     }
 
-    out = markdown_to_string(inputbuf->str, extensions, output_format);
+    const char * out = markdown_to_string(inputbuf, extensions, output_format);
     fprintf(output, "%s\n", out);
-    free(out);
 
-    g_string_free(inputbuf, true);
-
-    return(EXIT_SUCCESS);
+    [pool drain];
+    return (EXIT_SUCCESS);
 }
+
+/* vim:set ts=4 sw=4: */

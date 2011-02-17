@@ -1,6 +1,7 @@
 /**********************************************************************
 
-  markdown_lib.c - markdown in C using a PEG grammar.
+  markdown_lib.m - markdown in Cocoa using a PEG grammar.
+  (c) 2011 David Whetstone (david at humblehacker dot com).
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
 
   This program is free software; you can redistribute it and/or modify
@@ -17,38 +18,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "markdown_peg.h"
+#import "markdown_peg.h"
 
 #define TABSTOP 4
 
 /* preformat_text - allocate and copy text buffer while
  * performing tab expansion. */
-static GString *preformat_text(char *text) {
-    GString *buf;
-    char next_char;
-    int charstotab;
-
+static NSMutableString *preformat_text(NSString *text) {
+    NSMutableString *buf = [[[NSMutableString alloc] init] autorelease];
+    unichar next_char;
     int len = 0;
-
-    buf = g_string_new("");
-
-    charstotab = TABSTOP;
-    while ((next_char = *text++) != '\0') {
+    int charstotab = TABSTOP;
+    for (NSUInteger i = 0; i < text.length; ++i) {
+        next_char = [text characterAtIndex:i];
         switch (next_char) {
         case '\t':
             while (charstotab > 0)
-                g_string_append_c(buf, ' '), len++, charstotab--;
+                [buf appendCharacter:' '], len++, charstotab--;
             break;
         case '\n':
-            g_string_append_c(buf, '\n'), len++, charstotab = TABSTOP;
+            [buf appendCharacter:'\n'], len++, charstotab = TABSTOP;
             break;
         default:
-            g_string_append_c(buf, next_char), len++, charstotab--;
+            [buf appendCharacter:next_char], len++, charstotab--;
         }
         if (charstotab == 0)
             charstotab = TABSTOP;
     }
-    g_string_append(buf, "\n\n");
+    [buf appendString:@"\n\n"];
     return(buf);
 }
 
@@ -70,7 +67,7 @@ static void print_tree(element * elt, int indent) {
             case APOSTROPHE:         key = "APOSTROPHE"; break;
             case SINGLEQUOTED:       key = "SINGLEQUOTED"; break;
             case DOUBLEQUOTED:       key = "DOUBLEQUOTED"; break;
-            case STR:                key = "STR"; break;
+            case STRING:             key = "STRING"; break;
             case LINK:               key = "LINK"; break;
             case IMAGE:              key = "IMAGE"; break;
             case CODE:               key = "CODE"; break;
@@ -96,8 +93,8 @@ static void print_tree(element * elt, int indent) {
             case NOTE:               key = "NOTE"; break;
             default:                 key = "?";
         }
-        if ( elt->key == STR ) {
-            fprintf(stderr, "0x%x: %s   '%s'\n", (int)elt, key, elt->contents.str);
+        if ( elt->key == STRING ) {
+            fprintf(stderr, "0x%x: %s   '%s'\n", (int)elt, key, elt->contents.str.defaultCString);
         } else {
             fprintf(stderr, "0x%x: %s\n", (int)elt, key);
         }
@@ -113,25 +110,27 @@ static void print_tree(element * elt, int indent) {
 static element * process_raw_blocks(element *input, int extensions, element *references, element *notes) {
     element *current = NULL;
     element *last_child = NULL;
-    char *contents;
     current = input;
 
     while (current != NULL) {
         if (current->key == RAW) {
+            current->key = LIST;
             /* \001 is used to indicate boundaries between nested lists when there
              * is no blank line.  We split the string by \001 and parse
              * each chunk separately. */
-            contents = strtok(current->contents.str, "\001");
-            current->key = LIST;
-            current->children = parse_markdown(contents, extensions, references, notes);
-            last_child = current->children;
-            while ((contents = strtok(NULL, "\001"))) {
-                while (last_child->next != NULL)
-                    last_child = last_child->next;
-                last_child->next = parse_markdown(contents, extensions, references, notes);
+            NSArray *chunks = [current->contents.str componentsSeparatedByString:@"\001"];
+            for (NSString *contents in chunks) {
+                if (!last_child) {
+                    current->children = parse_markdown(contents, extensions, references, notes);
+                    last_child = current->children;
+                } else {
+                    while (last_child->next != NULL)
+                        last_child = last_child->next;
+                    last_child->next = parse_markdown(contents, extensions, references, notes);
+                }
             }
-            free(current->contents.str);
-            current->contents.str = NULL;
+            [current->contents.str release];
+            current->contents.str = nil;
         }
         if (current->children != NULL)
             current->children = process_raw_blocks(current->children, extensions, references, notes);
@@ -140,25 +139,17 @@ static element * process_raw_blocks(element *input, int extensions, element *ref
     return input;
 }
 
-/* markdown_to_gstring - convert markdown text to the output format specified.
- * Returns a GString, which must be freed after use using g_string_free(). */
-GString * markdown_to_g_string(char *text, int extensions, int output_format) {
-    element *result;
-    element *references;
-    element *notes;
-    GString *formatted_text;
-    GString *out;
-    out = g_string_new("");
+/* markdown_to_nstring - convert markdown text to the output format specified.
+ * Returns an autoreleased NSMutableString. */
+NSMutableString * markdown_to_nsstring(NSString *text, int extensions, int output_format) {
+    NSMutableString *out = [[[NSMutableString alloc] init] autorelease];
 
-    formatted_text = preformat_text(text);
+    NSMutableString *formatted_text = preformat_text(text);
 
-    references = parse_references(formatted_text->str, extensions);
-    notes = parse_notes(formatted_text->str, extensions, references);
-    result = parse_markdown(formatted_text->str, extensions, references, notes);
-
+    element *references = parse_references(formatted_text, extensions);
+    element *notes = parse_notes(formatted_text, extensions, references);
+    element *result = parse_markdown(formatted_text, extensions, references, notes);
     result = process_raw_blocks(result, extensions, references, notes);
-
-    g_string_free(formatted_text, TRUE);
 
     print_element_list(out, result, output_format, extensions);
 
@@ -169,13 +160,26 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
 /* markdown_to_string - convert markdown text to the output format specified.
  * Returns a null-terminated string, which must be freed after use. */
-char * markdown_to_string(char *text, int extensions, int output_format) {
-    GString *out;
-    char *char_out;
-    out = markdown_to_g_string(text, extensions, output_format);
-    char_out = out->str;
-    g_string_free(out, FALSE);
-    return char_out;
+const char * markdown_to_string(NSString *text, int extensions, int output_format) {
+    NSMutableString *out = markdown_to_nsstring(text, extensions, output_format);
+    return out.UTF8String;
 }
+
+@implementation NSString (Sugar)
+
+- (const char *)defaultCString {
+    return [self cStringUsingEncoding:[NSString defaultCStringEncoding]];
+}
+
+@end
+
+@implementation NSMutableString (Sugar)
+
+- (void)appendCharacter:(unichar)ch {
+    [self appendFormat:@"%c", ch];
+}
+
+@end
+
 
 /* vim:set ts=4 sw=4: */

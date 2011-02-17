@@ -1,25 +1,25 @@
 /* markdown_peg.h */
-#include "markdown_lib.h"
-#include <glib.h>
+#import "markdown_lib.h"
+#import <Foundation/Foundation.h>
 
 extern char *strdup(const char *string);
 
 /* Information (label, URL and title) for a link. */
 struct Link {
     struct Element   *label;
-    char             *url;
-    char             *title;    
+    NSString         *url;
+    NSString         *title;
 };
 
 typedef struct Link Link;
 
 /* Union for contents of an Element (string, list, or link). */
 union Contents {
-    char             *str;
+    NSMutableString  *str;
     struct Link      *link;
 };
 
-/* Types of semantic values returned by parsers. */ 
+/* Types of semantic values returned by parsers. */
 enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, see below. */
             RAW,    /* Raw markdown to be processed further */
             SPACE,
@@ -30,7 +30,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             APOSTROPHE,
             SINGLEQUOTED,
             DOUBLEQUOTED,
-            STR,
+            STRING,
             LINK,
             IMAGE,
             CODE,
@@ -61,10 +61,12 @@ struct Element {
 
 typedef struct Element element;
 
-element * parse_references(char *string, int extensions);
-element * parse_notes(char *string, int extensions, element *reference_list);
-element * parse_markdown(char *string, int extensions, element *reference_list, element *note_list);
+element * parse_references(NSString *string, int extensions);
+element * parse_notes(NSString *string, int extensions, element *reference_list);
+element * parse_markdown(NSString *string, int extensions, element *reference_list, element *note_list);
 void free_element_list(element * elt);
 void free_element(element *elt);
-void print_element_list(GString *out, element *elt, int format, int exts);
+void print_element_list(NSMutableString *out, element *elt, int format, int exts);
 
+
+/* vim:set ts=4 sw=4: */
