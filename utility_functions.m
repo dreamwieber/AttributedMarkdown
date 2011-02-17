@@ -111,7 +111,7 @@ static element * mk_list(int key, element *lst) {
 static element * mk_link(element *label, char *url, char *title) {
     element *result;
     result = mk_element(LINK);
-    result->contents.link = malloc(sizeof(link));
+    result->contents.link = malloc(sizeof(Link));
     result->contents.link->label = label;
     result->contents.link->url = strdup(url);
     result->contents.link->title = strdup(title);
@@ -168,9 +168,9 @@ static bool match_inlines(element *l1, element *l2) {
 
 /* find_reference - return true if link found in references matching label.
  * 'link' is modified with the matching url and title. */
-static bool find_reference(link *result, element *label) {
+static bool find_reference(Link *result, element *label) {
     element *cur = references;  /* pointer to walk up list of references */
-    link *curitem;
+    Link *curitem;
     while (cur != NULL) {
         curitem = cur->contents.link;
         if (match_inlines(label, curitem->label)) {
