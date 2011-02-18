@@ -7,6 +7,8 @@ markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/xcschememanagement.pli
 .DS_Store
 *.o
 markdown
-
 peg-0.1.4/leg
 peg-0.1.4/peg
+build
+
+tags
