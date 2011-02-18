@@ -1,7 +1,12 @@
 /* parsing_functions.c - Functions for parsing markdown and
  * freeing element lists. */
 
-int yyparse(void);
+void parse_from(yyrule yystart)
+{
+    GREG g;
+    memset(&g, 0, sizeof(g));
+    yyparse_from(&g, yystart);    /* first pass, just to collect references */
+}
 
 static void free_element_contents(element elt);
 
@@ -63,7 +68,7 @@ element * parse_references(NSString *string, int extensions) {
     md.input.charbuf  = string;
     md.input.position = 0;
   
-    yyparsefrom(yy_References);    /* first pass, just to collect references */
+    parse_from(yy_References);           /* first pass, just to collect references */
 
     md.input = saved;
 
@@ -81,7 +86,7 @@ element * parse_notes(NSString *string, int extensions, element *reference_list)
         md.input.charbuf  = string;
         md.input.position = 0;
 
-        yyparsefrom(yy_Notes);     /* second pass for notes */
+        parse_from(yy_Notes);           /* second pass for notes */
 
         md.input = saved;
     }
@@ -98,7 +103,7 @@ element * parse_markdown(NSString *string, int extensions, element *reference_li
     md.input.charbuf  = string;
     md.input.position = 0;
   
-    yyparsefrom(yy_Doc);
+    parse_from(yy_Doc);
 
     md.input = saved;
 

@@ -14,8 +14,6 @@
 		6334F281130C9326000D1180 /* markdown_output.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F274130C8CEE000D1180 /* markdown_output.m */; };
 		6334F282130C932A000D1180 /* markdown_parser.leg in Sources */ = {isa = PBXBuildFile; fileRef = 6334F275130C8CEE000D1180 /* markdown_parser.leg */; };
 		6334F28B130C995D000D1180 /* libpeg-markdown.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F234130C8B99000D1180 /* libpeg-markdown.a */; };
-		6334F28D130C99A8000D1180 /* libintl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F28C130C99A8000D1180 /* libintl.dylib */; };
-		6334F28F130C99AF000D1180 /* libglib-2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F28E130C99AF000D1180 /* libglib-2.0.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -29,7 +27,7 @@
 			outputFiles = (
 				"$(DERIVED_FILES_DIR)/$(INPUT_FILE_BASE).m",
 			);
-			script = "echo `/usr/local/bin/pkg-config --cflags glib-2.0`\n${SRCROOT}/peg-0.1.4/leg -o ${DERIVED_FILES_DIR}/${INPUT_FILE_BASE}.m ${INPUT_FILE_PATH}";
+			script = "/usr/local/bin/greg -o ${DERIVED_FILES_DIR}/${INPUT_FILE_BASE}.m ${INPUT_FILE_PATH}";
 		};
 /* End PBXBuildRule section */
 
@@ -72,12 +70,6 @@
 		6334F277130C8CEE000D1180 /* markdown.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = markdown.m; sourceTree = SOURCE_ROOT; };
 		6334F278130C8CEE000D1180 /* parsing_functions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = parsing_functions.m; sourceTree = SOURCE_ROOT; };
 		6334F279130C8CEE000D1180 /* utility_functions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = utility_functions.m; sourceTree = SOURCE_ROOT; };
-		6334F283130C9644000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
-		6334F285130C964D000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
-		6334F287130C9867000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
-		6334F289130C9873000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
-		6334F28C130C99A8000D1180 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = usr/local/lib/libintl.dylib; sourceTree = SDKROOT; };
-		6334F28E130C99AF000D1180 /* libglib-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.dylib"; path = "usr/local/lib/libglib-2.0.dylib"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,8 +77,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6334F28F130C99AF000D1180 /* libglib-2.0.dylib in Frameworks */,
-				6334F28D130C99A8000D1180 /* libintl.dylib in Frameworks */,
 				6334F28B130C995D000D1180 /* libpeg-markdown.a in Frameworks */,
 				6334F217130C8AE1000D1180 /* Foundation.framework in Frameworks */,
 			);
@@ -106,13 +96,6 @@
 		6334F207130C8AE1000D1180 = {
 			isa = PBXGroup;
 			children = (
-				6334F28E130C99AF000D1180 /* libglib-2.0.dylib */,
-				6334F28C130C99A8000D1180 /* libintl.dylib */,
-				6334F234130C8B99000D1180 /* libpeg-markdown.a */,
-				6334F289130C9873000D1180 /* libintl.dylib */,
-				6334F287130C9867000D1180 /* libglib-2.0.dylib */,
-				6334F285130C964D000D1180 /* libintl.dylib */,
-				6334F283130C9644000D1180 /* libglib-2.0.dylib */,
 				6334F271130C8CC0000D1180 /* markdown */,
 				6334F23B130C8B99000D1180 /* peg-markdown */,
 				6334F215130C8AE1000D1180 /* Frameworks */,
@@ -131,6 +114,7 @@
 		6334F215130C8AE1000D1180 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6334F234130C8B99000D1180 /* libpeg-markdown.a */,
 				6334F216130C8AE1000D1180 /* Foundation.framework */,
 				6334F235130C8B99000D1180 /* Cocoa.framework */,
 				6334F237130C8B99000D1180 /* Other Frameworks */,
