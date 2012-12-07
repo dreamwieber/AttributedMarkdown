@@ -12,3 +12,7 @@ peg-0.1.4/peg
 build
 
 tags
+
+*.xcuserstate
+
+markdown.xcodeproj/project.xcworkspace/xcuserdata/gregory.xcuserdatad/UserInterfaceState.xcuserstate

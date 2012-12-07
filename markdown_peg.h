@@ -6,17 +6,17 @@ extern char *strdup(const char *string);
 
 /* Information (label, URL and title) for a link. */
 struct Link {
-    struct Element   *label;
-    NSString         *url;
-    NSString         *title;
+    struct Element                          *label;
+    NSString         __unsafe_unretained    *url;
+    NSString         __unsafe_unretained    *title;
 };
 
 typedef struct Link Link;
 
 /* Union for contents of an Element (string, list, or link). */
 union Contents {
-    NSMutableString  *str;
-    struct Link      *link;
+    NSMutableString  __unsafe_unretained    *str;
+    struct Link                             *link;
 };
 
 /* Types of semantic values returned by parsers. */
@@ -66,7 +66,8 @@ element * parse_notes(NSString *string, int extensions, element *reference_list)
 element * parse_markdown(NSString *string, int extensions, element *reference_list, element *note_list);
 void free_element_list(element * elt);
 void free_element(element *elt);
-void print_element_list(NSMutableString *out, element *elt, int format, int exts);
+void print_element_list(NSMutableString *out, element *elt, int format, int exts, NSDictionary* current);
+void print_element_list_attr(NSMutableAttributedString *out, element *elt, int exts, NSDictionary __unsafe_unretained *attributes[], NSDictionary *current);
 
 
 /* vim:set ts=4 sw=4: */

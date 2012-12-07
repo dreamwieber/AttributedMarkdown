@@ -1,117 +1,76 @@
-What is this?
-=============
+AttributedMarkdown: Native Markdown Parsing on iOS
+==================================================
 
-This is an implementation of John Gruber's [markdown][] for Cocoa. It 
-uses a [parsing expression grammar (PEG)][] to define the syntax. This 
-should allow easy modification and extension. It currently supports output
-in HTML, LaTeX, or groff_mm formats, and adding new formats is relatively
-easy.
+>> Markdown is intended to be as easy-to-read and easy-to-write as is feasible.
 
-[parsing expression grammar (PEG)]: http://en.wikipedia.org/wiki/Parsing_expression_grammar 
-[markdown]: http://daringfireball.net/projects/markdown/
+-- [Daring Fireball](http://daringfireball.net/projects/markdown/)
 
-It is pretty fast. A 179K text file that takes 5.7 seconds for
-Markdown.pl (v. 1.0.1) to parse takes less than 0.2 seconds for this
-markdown. It does, however, use a lot of memory (up to 4M of heap space
-while parsing the 179K file, and up to 80K for a 4K file). (Note that
-the memory leaks in earlier versions of this program have now been
-plugged.)
+This library takes [Markdown](http://daringfireball.net/projects/markdown/) formatted text and turns it into an [NSAttributedString](https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html), suitable for rendering in native UIKit components on iOS 6 (UITextFiew, UILabel, etc). 
 
-Both a library and a standalone program are provided.
+In short, this allows you to apply styling to Markdown without having to use UIWebView and HTML tags.
 
-peg-markdown is written and maintained by John MacFarlane (jgm on
-github), with significant contributions by Ryan Tomayko (rtomayko).
-It is released under both the GPL and the MIT license; see LICENSE for
-details.  peg-markdown was adapted for Cocoa by David Whetstone.
+This project is based-upon / modifies a Cocoa fork of [peg markdown](https://github.com/humblehacker/peg-markdown/). 
 
-Installing
-==========
+### Usage:
+
+    // start with a raw markdown string
+    NSString *rawText = @"Hello, world. *This* is native Markdown.";
+
+    // create a font attribute for emphasized text
+    UIFont *emFont = [UIFont fontWithName:@"AvenirNext-MediumItalic" size:15.0];
+    
+    // create a color attribute for paragraph text
+    UIColor *color = [UIColor purpleColor];
+
+    // create a dictionary to hold your custom attributes for any Markdown types
+    NSDictionary *attributes = @{
+      @(EMPH): @{NSFontAttributeName : emFont,},
+      @(PARA): @{NSForegroundColorAttributeName : color,}
+    };
+   
+    // parse the markdown
+    NSAttributedString *prettyText = markdown_to_attr_string(rawText,0,attributes);
+
+    // assign it to a view object
+    myTextView.attributedText = prettyText;
 
 
-Extensions
-==========
 
-peg-markdown supports extensions to standard markdown syntax.
-These can be turned on using the command line flag `-x` or
-`--extensions`.  `-x` by itself turns on all extensions.  Extensions
-can also be turned on selectively, using individual command-line
-options. To see the available extensions:
+Check out the HelloMarkdown example app to see it in action.
+     
 
-    ./markdown --help-extensions
- 
-The `--smart` extension provides "smart quotes", dashes, and ellipses.
+### Requirements & Setup
 
-The `--notes` extension provides a footnote syntax like that of
-Pandoc or PHP Markdown Extra.
+AttributedMarkdown makes use of a parser-generator called [greg](https://github.com/nddrylliog/greg). This is included 
+as a submodule, and you'll need to first run this from the command-line (from your project's root directory): 
 
-Using the library
-=================
+    git submodule update --init --recursive
+    
+To use AttributedMarkdown in one of your projects, follow the standard Apple guidelines for 
+[linking against a static library](http://developer.apple.com/library/ios/#technotes/iOSStaticLibraries/Articles/configuration.html#/apple_ref/doc/uid/TP40012554-CH3-SW2)
 
-The library exports two functions:
 
-    NSString * markdown_to_nsstring(NSString *text, int extensions, int output_format);
-    char * markdown_to_string(NSString *text, int extensions, int output_format);
+### Basic Cascading Styles
 
-The only difference between these is that `markdown_to_nsstring` returns an
-autoreleased `NSString` (Cocoa's string class), while `markdown_to_string` returns 
-a regular character pointer.  The memory allocated for the latter is good until
-the enclosing pool is drained.
+AttributedMarkdown performs some very basic cascading styles, merging the string attributes of parent elements into child elements by extracting their font traits via CoreText. This allows for things like emphasized words within an h1 tag to be bold as well as italicized.  
 
-`text` is the markdown-formatted text to be converted.  Note that tabs will
-be converted to spaces, using a four-space tab stop.  Character encodings are
-ignored.
+### Performance
 
-`extensions` is a bit-field specifying which syntax extensions should be used.
-If `extensions` is 0, no extensions will be used.  If it is `0xFFFFFF`,
-all extensions will be used.  To set extensions selectively, use the
-bitwise `&` operator and the following constants:
+Although I have yet to perform any optimizations, parsing and display of markdown in a UITableView filled with many cells of long-form markdown sample text performs rather well. 
 
- - `EXT_SMART` turns on smart quotes, dashes, and ellipses.
- - `EXT_NOTES` turns on footnote syntax.  [Pandoc's footnote syntax][] is used here.
- - `EXT_FILTER_HTML` filters out raw HTML (except for styles).
- - `EXT_FILTER_STYLES` filters out styles in HTML.
+### Limitations
 
-  [Pandoc's footnote syntax]: http://johnmacfarlane.net/pandoc/README.html#footnotes
+This is a work in progress. Some tags are not yet supported, like img, etc. 
 
-`output_format` is either `HTML_FORMAT`, `LATEX_FORMAT`, or `GROFF_MM_FORMAT`.
+## Credit
 
-To use the library, include `markdown_lib.h`.  See `markdown.m` for an example.
+AttributedMarkdown was created by [Gregory Wieber](http://gregorywieber.com) and Jim Radford. It is based upon
+[peg-markdown](https://github.com/jgm/peg-markdown).
 
-Hacking
-=======
+## License
 
-It should be pretty easy to modify the program to produce other formats
-than HTML or LaTeX, and to parse syntax extensions.  A quick guide:
+AttributedMarkdown is released under both the GPL and the MIT license; see LICENSE for details. 
 
-  * `markdown_parser.leg` contains the grammar itself.
+### Peg-Markdown License
 
-  * `markdown_output.m` contains functions for printing the `Element`
-    structure in various output formats.
-
-  * To add an output format, add the format to `markdown_formats` in
-    `markdown_lib.h`.  Then modify `print_element` in `markdown_output.m`,
-    and add functions `print_XXXX_string`, `print_XXXX_element`, and
-    `print_XXXX_element_list`. Also add an option in the main program
-    that selects the new format. Don't forget to add it to the list of
-    formats in the usage message.
-
-  * To add syntax extensions, define them in the PEG grammar
-    (`markdown_parser.leg`), using existing extensions as a guide. New
-    inline elements will need to be added to `Inline =`; new block
-    elements will need to be added to `Block =`. (Note: the order
-    of the alternatives does matter in PEG grammars.)
-
-  * If you need to add new types of elements, modify the `keys`
-    enum in `markdown_peg.h`.
-
-  * By using `&{ }` rules one can selectively disable extensions
-    depending on command-line options. For example,
-    `&{ extension(EXT_SMART) }` succeeds only if the `EXT_SMART` bit
-    of the global `syntax_extensions` is set. Add your option to
-    `markdown_extensions` in `markdown_lib.h`, and add an option in
-    `markdown.m` to turn on your extension.
-
-  * Note: Avoid using `[^abc]` character classes in the grammar, because
-    they cause problems with non-ascii input. Instead, use: `( !'a' !'b'
-    !'c' . )`
-
+peg-markdown is written and maintained by John MacFarlane (jgm on github), with significant contributions by Ryan Tomayko (rtomayko). It is released under both the GPL and the MIT license; see LICENSE for details. peg-markdown was adapted for Cocoa by David Whetstone.

@@ -1,7 +1,0 @@
-//
-// Prefix header for all source files of the 'peg-markdown' target in the 'peg-markdown' project
-//
-
-#ifdef __OBJC__
-  #import <Cocoa/Cocoa.h>
-#endif

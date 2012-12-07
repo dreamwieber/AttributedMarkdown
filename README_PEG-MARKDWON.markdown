@@ -1,6 +1,18 @@
 What is this?
 =============
 
+This is an iOS/OS X compatible library for parsing markdown into NSAttributedString objects, based on the peg-markdown library. The library allows the user to specify how the different markdown elements should be displayed, by passing an array of NSDictionary objects containing NSAttributedString attributes. 
+
+Work In Progress
+================
+
+So far, this is a proof-of-concept. ARC compatibility should be given more careful consideration – it may be a good idea to re-write the library to use NSObjects for the tokenized elements rather than c-structs/unions. As it stands now, there are essentially zero style attributes included as defaults. 
+
+Credit
+======
+
+Developed by Gregory Wieber and Jim Radford.  
+
 This is an implementation of John Gruber's [markdown][] for Cocoa. It 
 uses a [parsing expression grammar (PEG)][] to define the syntax. This 
 should allow easy modification and extension. It currently supports output

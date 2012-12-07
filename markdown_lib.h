@@ -17,6 +17,8 @@ enum markdown_formats {
     GROFF_MM_FORMAT
 };
 
+NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extensions, NSDictionary* attributes);
+
 NSMutableString * markdown_to_nsstring(NSString *text, int extensions, int output_format);
 const char * markdown_to_string(NSString *text, int extensions, int output_format);
 

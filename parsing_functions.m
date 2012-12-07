@@ -6,6 +6,7 @@ void parse_from(yyrule yystart)
     GREG g;
     memset(&g, 0, sizeof(g));
     yyparse_from(&g, yystart);    /* first pass, just to collect references */
+    yydeinit(&g);
 }
 
 static void free_element_contents(element elt);

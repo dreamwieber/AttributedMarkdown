@@ -86,7 +86,7 @@ static element * mk_str(const char *string) {
     element *result;
     assert(string != NULL);
     result = mk_element(STRING);
-    result->contents.str = [[NSString alloc] initWithCString:string encoding:[NSString defaultCStringEncoding]];
+    result->contents.str = [[NSMutableString alloc] initWithCString:string encoding:[NSString defaultCStringEncoding]];
     return result;
 }
 
@@ -216,7 +216,7 @@ static bool find_note(element **result, NSString *label) {
 # define YY_DEBUG 1
 #endif
 
-#define YY_INPUT(buf, result, max_size)                               \
+#define YY_INPUT(buf, result, max_size, data)                         \
 {                                                                     \
     NSInteger yyc;                                                    \
     if (md.input.position < md.input.charbuf.length) {                \

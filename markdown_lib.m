@@ -1,6 +1,7 @@
 /**********************************************************************
 
   markdown_lib.m - markdown in Cocoa using a PEG grammar.
+  (c) 2012 Gregory Wieber & Jim Radford
   (c) 2011 David Whetstone (david at humblehacker dot com).
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
 
@@ -49,61 +50,6 @@ static NSMutableString *preformat_text(NSString *text) {
     return(buf);
 }
 
-/* print_tree - print tree of elements, for debugging only. */
-static void print_tree(element * elt, int indent) {
-    int i;
-    char * key;
-    while (elt != NULL) {
-        for (i = 0; i < indent; i++)
-            fputc(' ', stderr);
-        switch (elt->key) {
-            case LIST:               key = "LIST"; break;
-            case RAW:                key = "RAW"; break;
-            case SPACE:              key = "SPACE"; break;
-            case LINEBREAK:          key = "LINEBREAK"; break;
-            case ELLIPSIS:           key = "ELLIPSIS"; break;
-            case EMDASH:             key = "EMDASH"; break;
-            case ENDASH:             key = "ENDASH"; break;
-            case APOSTROPHE:         key = "APOSTROPHE"; break;
-            case SINGLEQUOTED:       key = "SINGLEQUOTED"; break;
-            case DOUBLEQUOTED:       key = "DOUBLEQUOTED"; break;
-            case STRING:             key = "STRING"; break;
-            case LINK:               key = "LINK"; break;
-            case IMAGE:              key = "IMAGE"; break;
-            case CODE:               key = "CODE"; break;
-            case HTML:               key = "HTML"; break;
-            case EMPH:               key = "EMPH"; break;
-            case STRONG:             key = "STRONG"; break;
-            case PLAIN:              key = "PLAIN"; break;
-            case PARA:               key = "PARA"; break;
-            case LISTITEM:           key = "LISTITEM"; break;
-            case BULLETLIST:         key = "BULLETLIST"; break;
-            case ORDEREDLIST:        key = "ORDEREDLIST"; break;
-            case H1:                 key = "H1"; break;
-            case H2:                 key = "H2"; break;
-            case H3:                 key = "H3"; break;
-            case H4:                 key = "H4"; break;
-            case H5:                 key = "H5"; break;
-            case H6:                 key = "H6"; break;
-            case BLOCKQUOTE:         key = "BLOCKQUOTE"; break;
-            case VERBATIM:           key = "VERBATIM"; break;
-            case HTMLBLOCK:          key = "HTMLBLOCK"; break;
-            case HRULE:              key = "HRULE"; break;
-            case REFERENCE:          key = "REFERENCE"; break;
-            case NOTE:               key = "NOTE"; break;
-            default:                 key = "?";
-        }
-        if ( elt->key == STRING ) {
-            fprintf(stderr, "0x%x: %s   '%s'\n", (int)elt, key, elt->contents.str.defaultCString);
-        } else {
-            fprintf(stderr, "0x%x: %s\n", (int)elt, key);
-        }
-        if (elt->children)
-            print_tree(elt->children, indent + 4);
-        elt = elt->next;
-    }
-}
-
 /* process_raw_blocks - traverses an element list, replacing any RAW elements with
  * the result of parsing them as markdown text, and recursing into the children
  * of parent elements.  The result should be a tree of elements without any RAWs. */
@@ -139,30 +85,62 @@ static element * process_raw_blocks(element *input, int extensions, element *ref
     return input;
 }
 
-/* markdown_to_nstring - convert markdown text to the output format specified.
- * Returns an autoreleased NSMutableString. */
-NSMutableString * markdown_to_nsstring(NSString *text, int extensions, int output_format) {
-    NSMutableString *out = [[[NSMutableString alloc] init] autorelease];
-
+NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extensions, NSDictionary* attributes) {
+    NSMutableAttributedString *out = [[[NSMutableAttributedString alloc] init] autorelease];
+    
     NSMutableString *formatted_text = preformat_text(text);
-
+    
     element *references = parse_references(formatted_text, extensions);
     element *notes = parse_notes(formatted_text, extensions, references);
     element *result = parse_markdown(formatted_text, extensions, references, notes);
     result = process_raw_blocks(result, extensions, references, notes);
+    
+    [out beginEditing];
+    
+    NSDictionary *_attributes[] = {
+        [LIST] =        [attributes objectForKey:[NSNumber numberWithInt:LIST]],
+        [RAW] =         [attributes objectForKey:[NSNumber numberWithInt:RAW]],
+        [SPACE]=        [attributes objectForKey:[NSNumber numberWithInt:SPACE]],
+        [LINEBREAK]=    [attributes objectForKey:[NSNumber numberWithInt:LINEBREAK]],
+        [ELLIPSIS]=     [attributes objectForKey:[NSNumber numberWithInt:ELLIPSIS]],
+        [EMDASH]=       [attributes objectForKey:[NSNumber numberWithInt:EMDASH]],
+        [ENDASH]=       [attributes objectForKey:[NSNumber numberWithInt:ENDASH]],
+        [APOSTROPHE]=   [attributes objectForKey:[NSNumber numberWithInt:APOSTROPHE]],
+        [SINGLEQUOTED]= [attributes objectForKey:[NSNumber numberWithInt:SINGLEQUOTED]],
+        [DOUBLEQUOTED]= [attributes objectForKey:[NSNumber numberWithInt:DOUBLEQUOTED]],
+        [STRING]=       [attributes objectForKey:[NSNumber numberWithInt:STRING]],
+        [LINK]=         [attributes objectForKey:[NSNumber numberWithInt:LINK]],
+        [IMAGE]=        [attributes objectForKey:[NSNumber numberWithInt:IMAGE]],
+        [CODE]=         [attributes objectForKey:[NSNumber numberWithInt:CODE]],
+        [HTML]=         [attributes objectForKey:[NSNumber numberWithInt:HTML]],
+        [EMPH]=         [attributes objectForKey:[NSNumber numberWithInt:EMPH]],
+        [STRONG]=       [attributes objectForKey:[NSNumber numberWithInt:STRONG]],
+        [PLAIN]=        [attributes objectForKey:[NSNumber numberWithInt:PLAIN]],
+        [PARA]=         [attributes objectForKey:[NSNumber numberWithInt:PARA]],
+        [LISTITEM]=     [attributes objectForKey:[NSNumber numberWithInt:LISTITEM]],
+        [BULLETLIST]=   [attributes objectForKey:[NSNumber numberWithInt:BULLETLIST]],
+        [ORDEREDLIST]=  [attributes objectForKey:[NSNumber numberWithInt:ORDEREDLIST]],
+        [H1]=           [attributes objectForKey:[NSNumber numberWithInt:H1]],
+        [H2]=           [attributes objectForKey:[NSNumber numberWithInt:H2]],
+        [H3]=           [attributes objectForKey:[NSNumber numberWithInt:H3]],
+        [H4]=           [attributes objectForKey:[NSNumber numberWithInt:H4]],
+        [H5]=           [attributes objectForKey:[NSNumber numberWithInt:H5]],
+        [H6]=           [attributes objectForKey:[NSNumber numberWithInt:H6]],
+        [BLOCKQUOTE]=   [attributes objectForKey:[NSNumber numberWithInt:BLOCKQUOTE]],
+        [VERBATIM]=     [attributes objectForKey:[NSNumber numberWithInt:VERBATIM]],
+        [HTMLBLOCK]=    [attributes objectForKey:[NSNumber numberWithInt:HTMLBLOCK]],
+        [HRULE]=        [attributes objectForKey:[NSNumber numberWithInt:HRULE]],
+        [REFERENCE]=    [attributes objectForKey:[NSNumber numberWithInt:REFERENCE]],
+        [NOTE]=         [attributes objectForKey:[NSNumber numberWithInt:NOTE]],
+    };
 
-    print_element_list(out, result, output_format, extensions);
-
+    
+    print_element_list_attr(out, result, extensions, _attributes, @{});
+    [out endEditing];
+    
     free_element_list(result);
     free_element_list(references);
     return out;
-}
-
-/* markdown_to_string - convert markdown text to the output format specified.
- * Returns a null-terminated string, which must be freed after use. */
-const char * markdown_to_string(NSString *text, int extensions, int output_format) {
-    NSMutableString *out = markdown_to_nsstring(text, extensions, output_format);
-    return out.UTF8String;
 }
 
 @implementation NSString (Sugar)

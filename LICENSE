@@ -1,4 +1,5 @@
 markdown in Cocoa, implemented using PEG grammar
+Copyright (c) 2012 Gregory Wieber & Jim Radford
 Copyright (c) 2011 David Whetstone
 Copyright (c) 2008 John MacFarlane
 
