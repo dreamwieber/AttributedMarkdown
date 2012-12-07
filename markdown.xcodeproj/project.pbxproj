@@ -12,6 +12,8 @@
 		8437BB7A16716FAD00E4A161 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8437BB7916716FAD00E4A161 /* Default-568h@2x.png */; };
 		84BB137F167024CD0095B1DC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3DB478515FFB7E200FC0AA0 /* UIKit.framework */; };
 		84BB1380167024DA0095B1DC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84BB137D167022DC0095B1DC /* Foundation.framework */; };
+		84F812571672B55300BA29BE /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 84F812561672B55300BA29BE /* Icon.png */; };
+		84F8125A1672B55700BA29BE /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 84F812591672B55700BA29BE /* icon@2x.png */; };
 		F303BA2A15FFB748008E18F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6334F216130C8AE1000D1180 /* Foundation.framework */; };
 		F303BA3215FFB748008E18F0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F303BA3015FFB748008E18F0 /* InfoPlist.strings */; };
 		F303BA3415FFB748008E18F0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F303BA3315FFB748008E18F0 /* main.m */; };
@@ -80,6 +82,8 @@
 		8437BB771671669300E4A161 /* README.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		8437BB7916716FAD00E4A161 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		84BB137D167022DC0095B1DC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		84F812561672B55300BA29BE /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		84F812591672B55700BA29BE /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		F303BA2615FFB748008E18F0 /* HelloMarkdown.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloMarkdown.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F303BA2F15FFB748008E18F0 /* HelloMarkdown-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HelloMarkdown-Info.plist"; sourceTree = "<group>"; };
 		F303BA3115FFB748008E18F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -140,6 +144,8 @@
 		6334F207130C8AE1000D1180 = {
 			isa = PBXGroup;
 			children = (
+				84F812591672B55700BA29BE /* icon@2x.png */,
+				84F812561672B55300BA29BE /* Icon.png */,
 				8437BB7916716FAD00E4A161 /* Default-568h@2x.png */,
 				8437BB771671669300E4A161 /* README.markdown */,
 				6334F23B130C8B99000D1180 /* attributed-markdown */,
@@ -348,6 +354,8 @@
 				F303BA3B15FFB748008E18F0 /* MainStoryboard.storyboard in Resources */,
 				8437BB781671669300E4A161 /* README.markdown in Resources */,
 				8437BB7A16716FAD00E4A161 /* Default-568h@2x.png in Resources */,
+				84F812571672B55300BA29BE /* Icon.png in Resources */,
+				84F8125A1672B55700BA29BE /* icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
