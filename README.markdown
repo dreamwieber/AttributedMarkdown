@@ -60,6 +60,11 @@ Leave the option to copy the files into your project _unselected_.
 
 (Note that you don't have to call the group "Headers", this is simply a suggestion. The important bit is making sure the header references exist somewhere in your project.)
 
+The import statements in your project, wherever you want to make use of the library (eg., in a View Controller) should look like:
+
+    #import "markdown_lib.h"
+    #import "markdown_peg.h"
+
 ### Basic Cascading Styles
 
 AttributedMarkdown performs some very basic cascading styles, merging the string attributes of parent elements into child elements by extracting their font traits via CoreText. This allows for things like emphasized words within an h1 tag to be bold as well as italicized.  
