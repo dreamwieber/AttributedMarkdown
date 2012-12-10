@@ -47,6 +47,9 @@ as a submodule, and you'll need to first run this from the command-line (from yo
     git submodule update --init --recursive
     
 You'll also need to include the CoreText Framework in your project.
+    
+To use AttributedMarkdown in one of your projects, follow the standard Apple guidelines for 
+[linking against a static library](http://developer.apple.com/library/ios/#technotes/iOSStaticLibraries/Articles/configuration.html#/apple_ref/doc/uid/TP40012554-CH3-SW2)
 
 Finally, create a group in your project called "Headers" and copy these files into it: 
 
@@ -54,10 +57,8 @@ Finally, create a group in your project called "Headers" and copy these files in
     markdown_peg.h 
 
 Leave the option to copy the files into your project _unselected_. 
-    
-To use AttributedMarkdown in one of your projects, follow the standard Apple guidelines for 
-[linking against a static library](http://developer.apple.com/library/ios/#technotes/iOSStaticLibraries/Articles/configuration.html#/apple_ref/doc/uid/TP40012554-CH3-SW2)
 
+(Note that you don't have to call the group "Headers", this is simply a suggestion. The important bit is making sure the header references exist somewhere in your project.)
 
 ### Basic Cascading Styles
 
