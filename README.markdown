@@ -46,6 +46,15 @@ as a submodule, and you'll need to first run this from the command-line (from yo
 
     git submodule update --init --recursive
     
+You'll also need to include the CoreText Framework in your project.
+
+Finally, create a group in your project called "Headers" and copy these files into it: 
+
+    markdown_lib.h
+    markdown_peg.h 
+
+Leave the option to copy the files into your project _unselected_. 
+    
 To use AttributedMarkdown in one of your projects, follow the standard Apple guidelines for 
 [linking against a static library](http://developer.apple.com/library/ios/#technotes/iOSStaticLibraries/Articles/configuration.html#/apple_ref/doc/uid/TP40012554-CH3-SW2)
 
