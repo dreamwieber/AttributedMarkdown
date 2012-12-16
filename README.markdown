@@ -5,7 +5,7 @@ AttributedMarkdown: Native Markdown Parsing on iOS
 
 -- [Daring Fireball](http://daringfireball.net/projects/markdown/)
 
-This library takes [Markdown](http://daringfireball.net/projects/markdown/) formatted text and turns it into an [NSAttributedString](https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html), suitable for rendering in native UIKit components on iOS 6 (UITextFiew, UILabel, etc). 
+This library takes [Markdown](http://daringfireball.net/projects/markdown/) formatted text and turns it into an [NSAttributedString](https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/NSAttributedString_Class/Reference/Reference.html), suitable for rendering in native UIKit components on iOS 6 (UITextView, UILabel, etc). 
 
 In short, this allows you to apply styling to Markdown without having to use UIWebView and HTML tags.
 
