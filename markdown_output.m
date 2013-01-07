@@ -95,6 +95,9 @@ static void print_attr_string(NSMutableAttributedString *out, NSString *str, NSD
 
 
 static NSMutableDictionary *merge(NSDictionary *into, NSDictionary *with) {
+    if (![with isKindOfClass:[NSDictionary class]]) {
+        return [NSMutableDictionary dictionaryWithDictionary:into];
+    }
     
     NSMutableDictionary *ret = [[[NSMutableDictionary alloc]initWithDictionary:into] autorelease];
     [ret addEntriesFromDictionary:with];
@@ -121,9 +124,9 @@ static NSMutableDictionary *merge(NSDictionary *into, NSDictionary *with) {
                 [ret setObject:newFont forKey:NSFontAttributeName];
             }
 
-            CFRelease(inheritedCTFont);
-            CFRelease(elementCTFont);
-            CFRelease(outCTFont);
+            if (inheritedCTFont) CFRelease(inheritedCTFont);
+            if (elementCTFont) CFRelease(elementCTFont);
+            if (outCTFont) CFRelease(outCTFont);
 
         } else {
             [ret setObject:inheritedFont forKey:NSFontAttributeName];

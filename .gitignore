@@ -1,9 +1,11 @@
 markdown.xcodeproj/project.xcworkspace/contents.xcworkspacedata
-markdown.xcodeproj/project.xcworkspace/xcuserdata/david.xcuserdatad/UserInterfaceState.xcuserstate
-markdown.xcodeproj/project.xcworkspace/xcuserdata/david.xcuserdatad/WorkspaceSettings.xcsettings
-markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/markdown.xcscheme
-markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/peg-markdown.xcscheme
-markdown.xcodeproj/xcuserdata/david.xcuserdatad/xcschemes/xcschememanagement.plist
+markdown.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/UserInterfaceState.xcuserstate
+markdown.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/WorkspaceSettings.xcsettings
+markdown.xcodeproj/xcuserdata/*.xcuserdatad/xcschemes/markdown.xcscheme
+markdown.xcodeproj/xcuserdata/*.xcuserdatad/xcschemes/peg-markdown.xcscheme
+markdown.xcodeproj/xcuserdata/*.xcuserdatad/xcschemes/xcschememanagement.plist
+markdown.xcodeproj/xcuserdata/*.xcuserdatad/xcschemes/HelloMarkdown.xcscheme
+markdown.xcodeproj/xcuserdata/*.xcuserdatad/xcschemes/attr-markdown-iOS.xcscheme
 .DS_Store
 *.o
 markdown
@@ -15,4 +17,4 @@ tags
 
 *.xcuserstate
 
-markdown.xcodeproj/project.xcworkspace/xcuserdata/gregory.xcuserdatad/UserInterfaceState.xcuserstate
+markdown.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/UserInterfaceState.xcuserstate
