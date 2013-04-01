@@ -45,7 +45,7 @@
 			outputFiles = (
 				"$(DERIVED_FILES_DIR)/$(INPUT_FILE_BASE).m",
 			);
-			script = "[ -f greg/Makefile ] || { cat <<MESSAGE; exit 1; }\n\nAttributedMarkdown requires the greg parser generator.  Run the following to get it.\n\n    git submodule update --init --recursive\n\nMESSAGE\nmake -C $TEMP_DIR -f $INPUT_FILE_DIR/greg/Makefile VPATH=$INPUT_FILE_DIR/greg || exit $?\n$TEMP_DIR/greg -o $DERIVED_FILES_DIR/${INPUT_FILE_BASE}.m $INPUT_FILE_PATH";
+			script = "[ -f greg/Makefile ] || { cat <<MESSAGE; exit 1; }\n\nAttributedMarkdown requires the greg parser generator.  Run the following to get it.\n\n    git submodule update --init --recursive\n\nMESSAGE\nSDKROOT= make -C $TEMP_DIR -f $INPUT_FILE_DIR/greg/Makefile VPATH=$INPUT_FILE_DIR/greg || exit $?\n$TEMP_DIR/greg -o $DERIVED_FILES_DIR/${INPUT_FILE_BASE}.m $INPUT_FILE_PATH";
 		};
 /* End PBXBuildRule section */
 
