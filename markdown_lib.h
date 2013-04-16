@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
 enum markdown_extensions {
 	EXT_NONE             = 0x00,
