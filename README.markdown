@@ -38,8 +38,18 @@ This project is based-upon / modifies a Cocoa fork of [peg markdown](https://git
 
 Check out the HelloMarkdown example app to see it in action.
      
+### Easy Setup (BETA)
+
+A Cocoapod Podspec file has been added that will allow you to do a pod install to get up and running quickly. Eventually we'll post it to the cocoapods repo. For now, here's what your podfile should look like:
+
+    platform :ios
+    pod 'AttributedMarkdown', :git => 'https://github.com/dreamwieber/AttributedMarkdown.git'
+    
+(The HelloMarkdown project hasn't been updated or tested against a cocoapod install. If you find any issues please let us know. This should work fine for your new project though.) 
 
 ### Requirements & Setup
+
+If you don't want to do Cocoapods, you can build the library yourself. There are some dependencies, which have proven tricky for some. Unless you need/want to modify the parser, it's probably easier to go with Cocoapod install. 
 
 AttributedMarkdown makes use of a parser-generator called [greg](https://github.com/nddrylliog/greg). This is included 
 as a submodule, and you'll need to first run this from the command-line (from your project's root directory): 
