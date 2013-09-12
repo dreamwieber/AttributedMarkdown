@@ -154,7 +154,7 @@ NSMutableAttributedString* markdown_to_attr_string(NSString *text, int extension
 @implementation NSMutableString (Sugar)
 
 - (void)appendCharacter:(unichar)ch {
-    [self appendFormat:@"%c", ch];
+    [self appendFormat:@"%C", ch];
 }
 
 @end
