@@ -86,7 +86,7 @@ static element * mk_str(const char *string) {
     element *result;
     assert(string != NULL);
     result = mk_element(STRING);
-    result->contents.str = [[NSMutableString alloc] initWithCString:string encoding:[NSString defaultCStringEncoding]];
+    result->contents.str = [[NSMutableString alloc] initWithCString:string encoding:NSASCIIStringEncoding];
     return result;
 }
 
