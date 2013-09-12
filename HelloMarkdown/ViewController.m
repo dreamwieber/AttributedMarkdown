@@ -79,7 +79,7 @@
     blockquoteParagraphStyle.headIndent = 16.0;
     blockquoteParagraphStyle.tailIndent = 16.0;
     blockquoteParagraphStyle.firstLineHeadIndent = 16.0;
-    [attributes setObject:@{NSFontAttributeName : [emFont fontWithSize:18.0], NSParagraphStyleAttributeName : blockquoteParagraphStyle} forKey:@(BLOCKQUOTE)];
+    [attributes setObject:@{NSFontAttributeName : [emFont fontWithSize:18.0], NSParagraphStyleAttributeName : pParagraphStyle} forKey:@(BLOCKQUOTE)];
     
     // verbatim (code)
     NSMutableParagraphStyle* verbatimParagraphStyle = [[NSMutableParagraphStyle alloc]init];
