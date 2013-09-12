@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>273E829D-D367-486B-A103-DAFE761F321D</string>
+	<key>IDESourceControlProjectName</key>
+	<string>markdown</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>9C99079B-D715-49F3-B29A-EB9A80B239AD</key>
+		<string>https://github.com/dreamwieber/AttributedMarkdown.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>markdown.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>9C99079B-D715-49F3-B29A-EB9A80B239AD</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/dreamwieber/AttributedMarkdown.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>9C99079B-D715-49F3-B29A-EB9A80B239AD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9C99079B-D715-49F3-B29A-EB9A80B239AD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>AttributedMarkdown</string>
+		</dict>
+	</array>
+</dict>
+</plist>
