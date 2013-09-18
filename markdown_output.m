@@ -103,9 +103,9 @@ static NSMutableDictionary *merge(NSDictionary *into, NSDictionary *with) {
     [ret addEntriesFromDictionary:with];
     
     // 'cascading' styles
-    UIFont* inheritedFont = [into objectForKey:NSFontAttributeName];
+    TARGET_PLATFORM_FONT* inheritedFont = [into objectForKey:NSFontAttributeName];
     if (inheritedFont) {
-        UIFont* elementFont = [with objectForKey:NSFontAttributeName];
+        TARGET_PLATFORM_FONT* elementFont = [with objectForKey:NSFontAttributeName];
         if (elementFont) {
 
             CTFontRef inheritedCTFont =  CTFontCreateWithName((CFStringRef)inheritedFont.fontName, inheritedFont.pointSize, NULL);
@@ -118,7 +118,7 @@ static NSMutableDictionary *merge(NSDictionary *into, NSDictionary *with) {
             
             // make a new UIFont/NSFont
             NSString *newFontName = [(NSString *)CTFontCopyName(outCTFont, kCTFontPostScriptNameKey) autorelease];
-            UIFont* newFont = [UIFont fontWithName:newFontName size:inheritedFont.pointSize];
+            TARGET_PLATFORM_FONT* newFont = [TARGET_PLATFORM_FONT fontWithName:newFontName size:inheritedFont.pointSize];
 
             if (newFont) {
                 [ret setObject:newFont forKey:NSFontAttributeName];
@@ -198,7 +198,7 @@ static void print_attr_element(NSMutableAttributedString *out, element *elt, NSD
                 NSDictionary *linkAttibutes = @{@"attributedMarkdownURL": url};
                 print_attr_element_list(out, elt->contents.link->label, attributes, merge(current, merge(attributes[elt->key], linkAttibutes)));
             } else {
-                NSDictionary *attributesBroken = @{NSForegroundColorAttributeName: [UIColor redColor]}; // Make this attributes[BROKEN]
+                NSDictionary *attributesBroken = @{NSForegroundColorAttributeName: [TARGET_PLATFORM_COLOR redColor]}; // Make this attributes[BROKEN]
                 print_attr_element_list(out, elt->contents.link->label, attributes, merge(current, attributesBroken));
                 print_attr_string(out, [NSString stringWithFormat: @" (%@)", elt->contents.link->url], current);
             }
