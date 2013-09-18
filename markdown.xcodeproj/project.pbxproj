@@ -32,6 +32,7 @@
 		F3DB478C15FFB8C800FC0AA0 /* markdown_lib.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F273130C8CEE000D1180 /* markdown_lib.m */; };
 		F3DB478D15FFB8C800FC0AA0 /* markdown_output.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334F274130C8CEE000D1180 /* markdown_output.m */; };
 		F3DB479915FFBCB700FC0AA0 /* libattr-markdown-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3DB479415FFB8C800FC0AA0 /* libattr-markdown-iOS.a */; };
+		FA8982AB17E941A300CA487B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = FA8982AA17E941A300CA487B /* platform.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -104,6 +105,7 @@
 		F3DB478515FFB7E200FC0AA0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3DB478715FFB7EB00FC0AA0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		F3DB479415FFB8C800FC0AA0 /* libattr-markdown-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libattr-markdown-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA8982AA17E941A300CA487B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 			children = (
 				6334F273130C8CEE000D1180 /* markdown_lib.m */,
 				6334F272130C8CEE000D1180 /* markdown_lib.h */,
+				FA8982AA17E941A300CA487B /* platform.h */,
 				6334F274130C8CEE000D1180 /* markdown_output.m */,
 				6334F275130C8CEE000D1180 /* markdown_parser.leg */,
 				6334F276130C8CEE000D1180 /* markdown_peg.h */,
@@ -256,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				38EB00391672704F004A48F6 /* attributed-markdown.pch in Headers */,
+				FA8982AB17E941A300CA487B /* platform.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -636,6 +640,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = "attr-markdown-iOS";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
@@ -657,6 +662,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = "attr-markdown-iOS";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
