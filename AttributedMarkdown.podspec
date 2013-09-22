@@ -7,9 +7,10 @@ Pod::Spec.new do |s|
   s.license      = { :type => 'MIT / GPL', :file => 'LICENSE' }
   s.author       = 'Gregory Wieber', 'Jim Radford'
   s.source       = { :git => "https://github.com/dreamwieber/AttributedMarkdown", :tag => "0.9.1" }
-  s.platform     = :ios
+  s.platform     = :ios, :osx
   s.source_files = 'markdown_lib.m', 'markdown_lib.h', 'markdown_peg.h', 'markdown_output.m', 'markdown_parser.m'
   s.public_header_files = '*.h'
   s.preserve_path = "utility_functions.m", "parsing_functions.m"
-  s.frameworks = 'CoreText', 'UIKit', 'Foundation'
+  s.ios.frameworks = 'CoreText', 'UIKit', 'Foundation'
+  s.osx.frameworks = 'CoreText', 'AppKit', 'Foundation'
 end
