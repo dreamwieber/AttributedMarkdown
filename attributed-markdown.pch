@@ -6,6 +6,5 @@
     #import <Foundation/Foundation.h>
     #include "TargetConditionals.h"
     #import <CoreText/CoreText.h>
-    #import "platform.h"
 
 #endif

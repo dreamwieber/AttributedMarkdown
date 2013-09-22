@@ -23,6 +23,7 @@
 #include <string.h>
 #include <assert.h>
 #import "markdown_peg.h"
+#import "platform.h"
 
 static int extensions;
 
