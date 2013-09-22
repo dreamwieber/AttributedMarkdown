@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "AttributedMarkdown"
-  s.version      = "0.9.1"
+  s.version      = "0.9.2"
   s.summary      = "A short description of AttributedMarkdown."
   s.homepage     = "https://github.com/dreamwieber/AttributedMarkdown"
   s.screenshots  = "http://gregorywieber.com/work/attributed_markdown.html"
