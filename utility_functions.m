@@ -49,7 +49,7 @@ static NSMutableString *concat_string_list(element *list) {
  ***********************************************************************/
 
 struct Input {
-    NSString *charbuf;     /* Buffer of characters to be parsed. */
+    char *charbuf;         /* Buffer of characters to be parsed. */
     NSUInteger position;   /* Curent index into charbuf. */
 };
 
@@ -86,7 +86,7 @@ static element * mk_str(const char *string) {
     element *result;
     assert(string != NULL);
     result = mk_element(STRING);
-    result->contents.str = [[NSMutableString alloc] initWithCString:string encoding:NSASCIIStringEncoding];
+    result->contents.str = [[NSMutableString alloc] initWithCString:string encoding:NSUTF8StringEncoding];
     return result;
 }
 
@@ -207,24 +207,24 @@ static bool find_note(element **result, NSString *label) {
 
   Definitions for leg parser generator.
   YY_INPUT is the function the parser calls to get new input.
-  We take all new input from (static) charbuf.
+  We take all new input from charbuf.
 
  ***********************************************************************/
 
-# define YYSTYPE element *
+#define YYSTYPE element *
 #ifdef __DEBUG__
-# define YY_DEBUG 1
+#define YY_DEBUG 1
 #endif
 
-#define YY_INPUT(buf, result, max_size, data)                         \
-{                                                                     \
-    NSInteger yyc;                                                    \
-    if (md.input.position < md.input.charbuf.length) {                \
-        yyc= [md.input.charbuf characterAtIndex:md.input.position++]; \
-    } else {                                                          \
-        yyc= EOF;                                                     \
-    }                                                                 \
-    result= (EOF == yyc) ? 0 : (*(buf) = yyc, 1);                     \
+#define YY_INPUT(buf, result, max_size, data)             \
+{                                                         \
+    int yyc;                                              \
+    if (md.input.charbuf && *md.input.charbuf != '\0') {  \
+        yyc= *md.input.charbuf++;                         \
+    } else {                                              \
+        yyc= EOF;                                         \
+    }                                                     \
+    result= (EOF == yyc) ? 0 : (*(buf)= yyc, 1);          \
 }
 
 
