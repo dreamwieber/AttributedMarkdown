@@ -66,7 +66,7 @@ element * parse_references(NSString *string, int extensions) {
     md.syntax_extensions = extensions;
 
     struct Input saved = md.input;
-    md.input.charbuf  = string;
+    md.input.charbuf  = (char *)[string UTF8String];
     md.input.position = 0;
   
     parse_from(yy_References);           /* first pass, just to collect references */
@@ -84,7 +84,7 @@ element * parse_notes(NSString *string, int extensions, element *reference_list)
         md.references = reference_list;
 
         struct Input saved = md.input;
-        md.input.charbuf  = string;
+        md.input.charbuf  = (char *)[string UTF8String];
         md.input.position = 0;
 
         parse_from(yy_Notes);           /* second pass for notes */
@@ -101,7 +101,7 @@ element * parse_markdown(NSString *string, int extensions, element *reference_li
     md.notes = note_list;
 
     struct Input saved = md.input;
-    md.input.charbuf  = string;
+    md.input.charbuf  = (char *)[string UTF8String];
     md.input.position = 0;
   
     parse_from(yy_Doc);
