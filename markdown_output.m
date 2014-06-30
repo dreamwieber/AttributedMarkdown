@@ -45,7 +45,7 @@ static NSMutableArray *endnotes = nil; /* List of endnotes to print after main c
 static int notenumber = 0;  /* Number of footnote. */
 
 /* pad - add newlines if needed */
-static void pad(NSMutableString *out, int num) {
+__unused static void pad(NSMutableString *out, int num) {
     while (num-- > padded)
         [out appendString:@"\n"];
     padded = num;
@@ -59,7 +59,7 @@ static void pad(NSMutableString *out, int num) {
 
 /* print_html_string - print string, escaping for HTML  
  * If obfuscate selected, convert characters to hex or decimal entities at random */
-static void print_html_string(NSMutableString *out, NSString *str, bool obfuscate) {
+__unused static void print_html_string(NSMutableString *out, NSString *str, bool obfuscate) {
   NSUInteger i;
   unichar ch;
   for (i = 0; i < str.length; ++i) {
@@ -161,7 +161,7 @@ static void print_attr_element_list(NSMutableAttributedString *out, element *lis
 
 
 /* add_endnote - add an endnote to global endnotes list. */
-static void add_endnote(element *elt) {
+__unused static void add_endnote(element *elt) {
     if (endnotes == nil)
         endnotes = [[NSMutableArray alloc] init];
    [endnotes insertObject:[NSValue valueWithPointer:(const void*)elt] atIndex:0];
