@@ -14,4 +14,5 @@ Pod::Spec.new do |s|
   s.preserve_path = "utility_functions.m", "parsing_functions.m"
   s.ios.frameworks = 'CoreText', 'UIKit', 'Foundation'
   s.osx.frameworks = 'CoreText', 'AppKit', 'Foundation'
+  s.requires_arc = false
 end
