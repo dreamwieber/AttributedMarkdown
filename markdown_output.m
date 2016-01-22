@@ -115,7 +115,7 @@ static NSMutableDictionary *merge(NSDictionary *into, NSDictionary *with) {
             // combine the font traits
             CTFontSymbolicTraits inheritedTraits = CTFontGetSymbolicTraits(inheritedCTFont);
             CTFontSymbolicTraits elementTraits = CTFontGetSymbolicTraits(elementCTFont);
-            CTFontRef outCTFont = CTFontCreateCopyWithSymbolicTraits(inheritedCTFont, inheritedFont.pointSize, NULL, inheritedTraits | elementTraits, elementTraits | inheritedTraits);
+            CTFontRef outCTFont = CTFontCreateCopyWithSymbolicTraits(elementCTFont, inheritedFont.pointSize, NULL, inheritedTraits | elementTraits, elementTraits | inheritedTraits);
             
             // make a new UIFont/NSFont
             NSString *newFontName = [(NSString *)CTFontCopyName(outCTFont, kCTFontPostScriptNameKey) autorelease];
